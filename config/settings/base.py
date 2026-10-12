@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+
     # Local apps
     "core",
     "accounts",
     "forum",
+    "editor",
 ]
 AUTH_USER_MODEL = "accounts.User"
 MIDDLEWARE = [
@@ -148,3 +150,6 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

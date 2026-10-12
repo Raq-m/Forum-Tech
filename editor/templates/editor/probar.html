@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prueba del editor</title>
+  <link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
+  <style>
+     #vista-previa img { max-width: 100%; }
+    body { font-family: sans-serif; margin: 2rem; }
+    .cajas { display: flex; gap: 1rem; }
+    textarea, #vista-previa {
+      width: 50%; min-height: 350px; padding: 1rem;
+      border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
+    }
+    .codehilite { padding: 0.5rem 1rem; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Editor de prueba</h1>
+  <form>{% csrf_token %}</form>
+
+  <div class="cajas">
+    <textarea id="texto" placeholder="Escribe en Markdown aquí..."></textarea>
+    <div id="vista-previa"></div>
+  </div>
+
+  <script>
+    const texto = document.getElementById("texto");
+    const vista = document.getElementById("vista-previa");
+    const token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+  
+    texto.addEventListener("input", async () => {
+      const datos = new FormData();
+      datos.append("texto", texto.value);
+
+      const respuesta = await fetch("{% url 'editor:vista_previa' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": token },
+        body: datos,
+      });
+      const resultado = await respuesta.json();
+      vista.innerHTML = resultado.html;
+    });
+     
+    texto.addEventListener("dragover", (e) => e.preventDefault());
+    texto.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      for (const archivo of e.dataTransfer.files) {
+        if (!archivo.type.startsWith("image/")) continue;
+
+        const datos = new FormData();
+        datos.append("imagen", archivo);
+        const respuesta = await fetch("{% url 'editor:subir_imagen' %}", {
+          method: "POST",
+          headers: { "X-CSRFToken": token },
+          body: datos,
+        });
+        const resultado = await respuesta.json();
+        if (!respuesta.ok) { alert(resultado.error); continue; }
+
+        texto.setRangeText(
+          `\n![${archivo.name}](${resultado.url})\n`,
+          texto.selectionStart, texto.selectionEnd, "end"
+        );
+        texto.dispatchEvent(new Event("input"));
+      }
+    });
+  </script>
+</body>
+</html>

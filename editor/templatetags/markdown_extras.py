@@ -11,8 +11,15 @@ register = template.Library()
 
 
 YOUTUBE_RE = re.compile(
+    
     r"<p>\s*https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)"
     r"([\w-]{11})[^<\s]*\s*</p>"
+)
+
+ENLACE_SOLO_RE = re.compile(r"<p>\s*(https?://[^\s<>\"']+)\s*</p>")
+ENLACE_SOLO_HTML = (
+    '<p><a class="enlace-solo" href="\\1" target="_blank" '
+    'rel="noopener noreferrer nofollow">\\1</a></p>'
 )
 
 
@@ -31,7 +38,7 @@ def _incrustar_youtube(coincidencia):
 
 @register.filter(name="markdown")
 def markdown_a_html(texto):
-    # 1. Convierte el Markdown en HTML (y colorea el código)
+   
     html = markdown.markdown(
         texto or "",
         extensions=["fenced_code", "codehilite", "tables", "nl2br"],
@@ -50,6 +57,7 @@ def markdown_a_html(texto):
     )
 
     html_limpio = YOUTUBE_RE.sub(_incrustar_youtube, html_limpio)
+    html_limpio = ENLACE_SOLO_RE.sub(ENLACE_SOLO_HTML, html_limpio)
 
     html_limpio = resaltar_menciones(html_limpio, extraer_menciones(texto))
 

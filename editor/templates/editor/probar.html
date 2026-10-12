@@ -6,7 +6,14 @@
   <title>Prueba del editor</title>
   <link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
   <style>
-        .mencion { background: #e8f0fe; color: #1a56db; padding: 0 0.25rem; border-radius: 4px; }
+    .tarjeta-enlace { display: flex; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; max-width: 560px; margin: 0.5rem 0; }
+    .tarjeta-enlace img { width: 140px; object-fit: cover; }
+    .tarjeta-enlace div { padding: 0.5rem 0.75rem; }
+    .tarjeta-enlace p { margin: 0.2rem 0; }
+    .tarjeta-enlace .dominio { font-size: 0.8rem; color: #666; }
+    .tarjeta-enlace .titulo { font-weight: bold; }
+    .tarjeta-enlace .descripcion { font-size: 0.9rem; color: #444; }
+    .mencion { background: #e8f0fe; color: #1a56db; padding: 0 0.25rem; border-radius: 4px; }
     .video { aspect-ratio: 16 / 9; max-width: 560px; }
     .video iframe { width: 100%; height: 100%; border: 0; }
     #barra { margin-bottom: 0.5rem; display: flex; gap: 0.5rem; }
@@ -53,6 +60,8 @@
       });
       const resultado = await respuesta.json();
       vista.innerHTML = resultado.html;
+      clearTimeout(temporizador);
+      temporizador = setTimeout(() => cargarTarjetas(vista), 800);
     });
      
     texto.addEventListener("dragover", (e) => e.preventDefault());
@@ -119,6 +128,49 @@
       else if (tecla === "i") { e.preventDefault(); envolver("*"); }
       else if (tecla === "k") { e.preventDefault(); enlace(); }
     });
+  
+    let temporizador;
+    const cacheTarjetas = new Map();
+
+    function crearTarjeta(t) {
+      const a = document.createElement("a");
+      a.className = "tarjeta-enlace";
+      a.href = t.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer nofollow";
+      if (t.imagen) {
+        const img = document.createElement("img");
+        img.src = t.imagen;
+        img.alt = "";
+        a.appendChild(img);
+      }
+      const cuerpo = document.createElement("div");
+      for (const [clase, valor] of [["dominio", t.dominio], ["titulo", t.titulo], ["descripcion", t.descripcion]]) {
+        if (!valor) continue;
+        const p = document.createElement("p");
+        p.className = clase;
+        p.textContent = valor;   
+        cuerpo.appendChild(p);
+      }
+      a.appendChild(cuerpo);
+      return a;
+    }
+
+    async function cargarTarjetas(contenedor) {
+      for (const enlace of contenedor.querySelectorAll("a.enlace-solo")) {
+        const url = enlace.href;
+        if (!cacheTarjetas.has(url)) {
+          const datos = new FormData();
+          datos.append("url", url);
+          cacheTarjetas.set(url, fetch("{% url 'editor:previsualizar_enlace' %}", {
+            method: "POST", headers: { "X-CSRFToken": token }, body: datos,
+          }).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+        }
+        const tarjeta = await cacheTarjetas.get(url);
+        if (!tarjeta || !enlace.isConnected) continue;
+        (enlace.closest("p") || enlace).replaceWith(crearTarjeta(tarjeta));
+      }
+    }
   </script>
 </body>
 </html>

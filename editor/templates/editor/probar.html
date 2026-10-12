@@ -6,7 +6,11 @@
   <title>Prueba del editor</title>
   <link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
   <style>
-     #vista-previa img { max-width: 100%; }
+    .video { aspect-ratio: 16 / 9; max-width: 560px; }
+    .video iframe { width: 100%; height: 100%; border: 0; }
+    #barra { margin-bottom: 0.5rem; display: flex; gap: 0.5rem; }
+    #barra button { padding: 0.3rem 0.8rem; cursor: pointer; }
+    #vista-previa img { max-width: 100%; }
     body { font-family: sans-serif; margin: 2rem; }
     .cajas { display: flex; gap: 1rem; }
     textarea, #vista-previa {
@@ -19,7 +23,13 @@
 <body>
   <h1>Editor de prueba</h1>
   <form>{% csrf_token %}</form>
-
+  <div id="barra">
+    <button type="button" data-envolver="**" title="Ctrl+B">Negrita</button>
+    <button type="button" data-envolver="*" title="Ctrl+I">Cursiva</button>
+    <button type="button" data-envolver="`">Código</button>
+    <button type="button" data-bloque>Bloque de código</button>
+    <button type="button" data-enlace title="Ctrl+K">Enlace</button>
+  </div>
   <div class="cajas">
     <textarea id="texto" placeholder="Escribe en Markdown aquí..."></textarea>
     <div id="vista-previa"></div>
@@ -66,6 +76,47 @@
         );
         texto.dispatchEvent(new Event("input"));
       }
+    });
+       
+    function envolver(simbolo) {
+      const ini = texto.selectionStart, fin = texto.selectionEnd;
+      const seleccion = texto.value.slice(ini, fin) || "texto";
+      texto.setRangeText(simbolo + seleccion + simbolo, ini, fin, "select");
+      texto.focus();
+      texto.dispatchEvent(new Event("input"));
+    }
+
+    function bloqueCodigo() {
+      const ini = texto.selectionStart, fin = texto.selectionEnd;
+      const seleccion = texto.value.slice(ini, fin) || "tu código aquí";
+      texto.setRangeText("\n```python\n" + seleccion + "\n```\n", ini, fin, "select");
+      texto.focus();
+      texto.dispatchEvent(new Event("input"));
+    }
+
+    function enlace() {
+      const ini = texto.selectionStart, fin = texto.selectionEnd;
+      const seleccion = texto.value.slice(ini, fin) || "texto";
+      texto.setRangeText("[" + seleccion + "](https://)", ini, fin, "end");
+      texto.focus();
+      texto.dispatchEvent(new Event("input"));
+    }
+
+    document.getElementById("barra").addEventListener("click", (e) => {
+      const boton = e.target.closest("button");
+      if (!boton) return;
+      if (boton.dataset.envolver) envolver(boton.dataset.envolver);
+      else if (boton.dataset.bloque !== undefined) bloqueCodigo();
+      else if (boton.dataset.enlace !== undefined) enlace();
+    });
+
+    
+    texto.addEventListener("keydown", (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const tecla = e.key.toLowerCase();
+      if (tecla === "b") { e.preventDefault(); envolver("**"); }
+      else if (tecla === "i") { e.preventDefault(); envolver("*"); }
+      else if (tecla === "k") { e.preventDefault(); enlace(); }
     });
   </script>
 </body>

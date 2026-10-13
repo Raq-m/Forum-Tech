@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Iniciar sesión | Forum Tech
+{% endblock %}
+
+{% block content %}
+<h1>Iniciar sesión</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Entrar</button>
+</form>
+
+<p>
+    ¿Todavía no tienes cuenta?
+    <a href="{% url 'register' %}">Regístrate aquí</a>
+</p>
+{% endblock %}

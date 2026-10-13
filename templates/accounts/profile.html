@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+Mi perfil | Forum Tech
+{% endblock %}
+
+{% block content %}
+<h1>Mi perfil</h1>
+
+<p><strong>Usuario:</strong> {{ user.username }}</p>
+<p><strong>Nombre:</strong> {{ user.first_name }}</p>
+<p><strong>Apellidos:</strong> {{ user.last_name }}</p>
+<p><strong>Correo:</strong> {{ user.email }}</p>
+<p><strong>Teléfono:</strong> {{ user.phone }}</p>
+<p><strong>Ciudad:</strong> {{ user.city }}</p>
+<p><strong>Biografía:</strong> {{ user.bio }}</p>
+
+{% if user.avatar %}
+    <h2>Foto de perfil</h2>
+    <img
+        src="{{ user.avatar.url }}"
+        alt="Avatar de {{ user.username }}"
+        width="150"
+    >
+{% endif %}
+
+<p>
+    <a href="{% url 'edit_profile' %}">
+        Editar mi perfil
+    </a>
+</p>
+{% endblock %}

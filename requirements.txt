@@ -7,3 +7,4 @@ Markdown
 Pygments
 nh3
 pillow
+requests

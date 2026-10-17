@@ -22,6 +22,19 @@ class Thread(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(
+        "Tag",
+        blank=True,
+        related_name="threads",
+    )
+    accepted_reply = models.ForeignKey(
+        "Reply",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        editable=False,
+    )
 
     class Meta:
         ordering = ["-created_at"]
@@ -244,4 +257,55 @@ class Report(models.Model):
 
     def __str__(self):
         return f"Reporte {self.pk} - {self.get_reason_display()}"
-    
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"#{self.name}"
+
+    @classmethod
+    def desde_texto(cls, texto):
+        """'#Python, django' -> [Tag('python'), Tag('django')]"""
+        nombres = {
+            palabra.strip().lstrip("#").lower()
+            for palabra in (texto or "").replace(",", " ").split()
+        }
+        return [
+            cls.objects.get_or_create(name=nombre)[0]
+            for nombre in sorted(nombres)
+            if nombre and len(nombre) <= 30
+        ]
+
+
+class UserFollow(models.Model):
+    follower = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="follows_given",
+    )
+    followed = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="follows_received",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["follower", "followed"],
+                name="unique_follow_per_pair",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(follower=models.F("followed")),
+                name="cannot_follow_yourself",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.follower} sigue a {self.followed}"

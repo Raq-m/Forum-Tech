@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Fusionar hilo | Forum Tech{% endblock %}
+
+{% block content %}
+<h1>Fusionar hilo</h1>
+
+<p>Origen: <strong>{{ source.title }}</strong></p>
+
+<p>
+    Las respuestas pasarán al hilo de destino conservando sus votos.
+    El hilo original quedará bloqueado y su enlace llevará al destino.
+    El texto inicial y los votos del hilo original se conservarán
+    en su registro.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Confirmar fusión</button>
+</form>
+
+<p>
+    <a href="{% url 'forum:thread_detail' source.pk %}">
+        Cancelar
+    </a>
+</p>
+{% endblock %}
+{% if perms.forum.change_thread and not user.is_suspended %}
+    <p>
+        <a href="{% url 'forum:thread_merge' thread.pk %}">
+            Fusionar este hilo
+        </a>
+    </p>
+{% endif %}

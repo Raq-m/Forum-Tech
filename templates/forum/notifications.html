@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones | Forum Tech{% endblock %}
+
+{% block content %}
+<h1>Mis notificaciones</h1>
+
+{% for notification in notifications %}
+    <article>
+        <h2>{{ notification.get_kind_display }}</h2>
+
+        <p>
+            {% if notification.actor %}
+                {{ notification.actor.username }}
+            {% else %}
+                Un usuario eliminado
+            {% endif %}
+
+            {% if notification.kind == "reply" %}
+                ha respondido a tu hilo.
+            {% elif notification.kind == "mention" %}
+                te ha mencionado.
+            {% elif notification.kind == "vote" %}
+                ha votado tu publicación.
+            {% endif %}
+        </p>
+
+        <p>
+            <a href="{% url 'forum:thread_detail' notification.thread_id %}">
+                {{ notification.thread.title }}
+            </a>
+        </p>
+
+        <p>{{ notification.created_at|date:"d/m/Y H:i" }}</p>
+
+        {% if notification.is_read %}
+            <p>Leída</p>
+        {% else %}
+            <form method="post"
+                  action="{% url 'forum:notification_mark_read' notification.pk %}">
+                {% csrf_token %}
+                <button type="submit">Marcar como leída</button>
+            </form>
+        {% endif %}
+    </article>
+{% empty %}
+    <p>No tienes notificaciones.</p>
+{% endfor %}
+{% endblock %}

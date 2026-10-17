@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -12,6 +13,18 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    suspended_until = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    @property
+    def is_suspended(self):
+        return (
+            self.suspended_until is not None
+            and self.suspended_until > timezone.now()
+        )
 
     def __str__(self):
         return self.username
+    

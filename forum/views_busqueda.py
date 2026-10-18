@@ -1,10 +1,12 @@
 from datetime import date
 
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 
 from .models import Thread
-from .search import buscar_hilos
+from .search import buscar_hilos, hilos_visibles
 
 FEEDS = [
     ("nuevos", "Nuevos"),
@@ -13,6 +15,7 @@ FEEDS = [
     ("siguiendo", "Siguiendo"),
 ]
 POR_PAGINA = 10
+MAX_SUGERENCIAS = 8
 
 
 def _fecha(texto):
@@ -57,7 +60,7 @@ def thread_list(request):
             etiquetas=etiquetas.replace(",", " ").split(),
             resuelto={"resuelto": True, "sin-resolver": False}.get(estado),
         )
-        # Cada pestaña ajusta el resultado, y los filtros siguen funcionando
+
         if feed == "populares":
             hilos = hilos.order_by("-puntuacion", "-num_respuestas", "-created_at")
         elif feed == "sin-respuesta":
@@ -83,4 +86,26 @@ def thread_list(request):
         "estado": estado,
         "aviso": aviso,
         "querystring": parametros.urlencode(),
+    })
+
+
+def thread_suggest(request):
+    """Sugerencias de títulos mientras se escribe en el buscador."""
+    q = request.GET.get("q", "").strip()
+    if len(q) < 2:
+        return JsonResponse({"resultados": []})
+
+    hilos = hilos_visibles()
+    for palabra in q.split():
+        hilos = hilos.filter(title__icontains=palabra)
+    hilos = hilos.order_by("-puntuacion", "-created_at")[:MAX_SUGERENCIAS]
+
+    return JsonResponse({
+        "resultados": [
+            {
+                "titulo": hilo.title,
+                "url": reverse("forum:thread_detail", args=[hilo.pk]),
+            }
+            for hilo in hilos
+        ]
     })

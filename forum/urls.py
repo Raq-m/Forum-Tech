@@ -1,13 +1,14 @@
 from django.urls import path
 
 from . import views
-from .views_busqueda import thread_list
+from .views_busqueda import thread_list, thread_suggest
 from .views_social import accept_solution, toggle_follow
 
 app_name = "forum"
 
 urlpatterns = [
     path("threads/", thread_list, name="thread_list"),
+    path("threads/suggest/", thread_suggest, name="thread_suggest"),
     path("threads/<int:pk>/", views.thread_detail, name="thread_detail"),
     path("threads/<int:pk>/vote/", views.vote_thread, name="vote_thread"),
     path("replies/<int:pk>/vote/", views.vote_reply, name="vote_reply"),

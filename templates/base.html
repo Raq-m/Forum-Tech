@@ -7,6 +7,10 @@
     <title>
         {% block title %}Forum Tech{% endblock %}
     </title>
+    {% load static %}
+<link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 {% if user.is_authenticated %}
     <aside aria-label="Notificaciones en tiempo real">
@@ -81,7 +85,7 @@
     <header>
         <nav>
             <a href="{% url 'core:home' %}">Forum Tech</a>
-
+<a href="{% url 'forum:thread_list' %}">Hilos</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">Mi perfil</a>
                 <a href="{% url 'edit_profile' %}">Editar perfil</a>

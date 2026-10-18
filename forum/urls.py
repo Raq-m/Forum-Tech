@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 from .views_busqueda import thread_list
+from .views_social import accept_solution, toggle_follow
 
 app_name = "forum"
 
@@ -10,6 +11,8 @@ urlpatterns = [
     path("threads/<int:pk>/", views.thread_detail, name="thread_detail"),
     path("threads/<int:pk>/vote/", views.vote_thread, name="vote_thread"),
     path("replies/<int:pk>/vote/", views.vote_reply, name="vote_reply"),
+    path("replies/<int:pk>/accept/", accept_solution, name="accept_solution"),
+    path("users/<str:username>/follow/", toggle_follow, name="toggle_follow"),
     path("notifications/", views.notification_list, name="notifications"),
     path(
         "notifications/<int:pk>/read/",

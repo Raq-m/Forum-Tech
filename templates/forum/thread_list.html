@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Hilos · Forum Tech{% endblock %}
+
+{% block content %}
+<style>
+    .buscador { position: relative; display: inline-block; }
+    #sugerencias {
+        position: absolute; left: 0; right: 0; z-index: 10;
+        margin: 0; padding: 0; list-style: none;
+        background: #fff; border: 1px solid #ccc; border-radius: 6px;
+        max-height: 14rem; overflow-y: auto;
+    }
+    #sugerencias li a {
+        display: block; padding: 0.4rem 0.6rem;
+        text-decoration: none; color: inherit;
+    }
+    #sugerencias li a:hover { background: #eee; }
+</style>
+
+<h1>Hilos</h1>
+
+<nav aria-label="Feeds">
+  {% for clave, nombre in feeds %}
+    {% if clave == feed %}
+      <strong>{{ nombre }}</strong>
+    {% else %}
+      <a href="?feed={{ clave }}">{{ nombre }}</a>
+    {% endif %}
+    {% if not forloop.last %} · {% endif %}
+  {% endfor %}
+</nav>
+
+<form method="get">
+  <input type="hidden" name="feed" value="{{ feed }}">
+  <p>
+    <label for="buscador">Buscar</label>
+    <span class="buscador">
+      <input type="search" id="buscador" name="q" value="{{ q }}" autocomplete="off">
+      <ul id="sugerencias" hidden></ul>
+    </span>
+    <button type="submit">Buscar</button>
+  </p>
+  <p>
+    <label>Autor <input name="autor" value="{{ autor }}"></label>
+    <label>Etiquetas <input name="etiquetas" value="{{ etiquetas }}" placeholder="python docker"></label>
+  </p>
+  <p>
+    <label>Desde <input type="date" name="desde" value="{{ desde }}"></label>
+    <label>Hasta <input type="date" name="hasta" value="{{ hasta }}"></label>
+    <label>Votos mínimos <input type="number" name="min_votos" value="{{ min_votos }}"></label>
+    <label>Estado
+      <select name="estado">
+        <option value="">Todos</option>
+        <option value="resuelto" {% if estado == "resuelto" %}selected{% endif %}>Resueltos</option>
+        <option value="sin-resolver" {% if estado == "sin-resolver" %}selected{% endif %}>Sin resolver</option>
+      </select>
+    </label>
+  </p>
+  <p><a href="?feed={{ feed }}">Limpiar filtros</a></p>
+</form>
+
+{% if aviso %}<p>{{ aviso }}</p>{% endif %}
+
+{% for hilo in pagina %}
+  <article>
+    <h2><a href="{% url 'forum:thread_detail' hilo.pk %}">{{ hilo.title }}</a></h2>
+    <p>
+      por {{ hilo.author }} · {{ hilo.created_at|date:"d/m/Y H:i" }} ·
+      {{ hilo.puntuacion }} votos · {{ hilo.num_respuestas }} respuestas
+      {% if hilo.esta_resuelto %} · <strong>Resuelto</strong>{% endif %}
+    </p>
+    {% if hilo.tags.all %}
+      <p>
+        {% for etiqueta in hilo.tags.all %}
+          <a href="?feed={{ feed }}&amp;etiquetas={{ etiqueta.name }}">{{ etiqueta }}</a>
+        {% endfor %}
+      </p>
+    {% endif %}
+  </article>
+{% empty %}
+  {% if not aviso %}<p>No hay hilos que coincidan.</p>{% endif %}
+{% endfor %}
+
+{% if pagina.has_other_pages %}
+  <nav aria-label="Paginación">
+    {% if pagina.has_previous %}
+      <a href="?{{ querystring }}&amp;page={{ pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+    Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}
+    {% if pagina.has_next %}
+      <a href="?{{ querystring }}&amp;page={{ pagina.next_page_number }}">Siguiente</a>
+    {% endif %}
+  </nav>
+{% endif %}
+
+<script>
+(() => {
+  const entrada = document.getElementById("buscador");
+  const lista = document.getElementById("sugerencias");
+  const direccion = "{% url 'forum:thread_suggest' %}";
+  let temporizador;
+  let ultimaPeticion = 0;
+
+  function ocultar() {
+    lista.hidden = true;
+    lista.replaceChildren();
+  }
+
+  async function pedirSugerencias() {
+    const texto = entrada.value.trim();
+    if (texto.length < 2) {
+      ocultar();
+      return;
+    }
+    const estaPeticion = ++ultimaPeticion;
+    try {
+      const respuesta = await fetch(direccion + "?q=" + encodeURIComponent(texto));
+   
+      if (!respuesta.ok || estaPeticion !== ultimaPeticion) return;
+      const datos = await respuesta.json();
+      lista.replaceChildren();
+      for (const item of datos.resultados) {
+        const elemento = document.createElement("li");
+        const enlace = document.createElement("a");
+        enlace.href = item.url;
+        enlace.textContent = item.titulo;  // textContent: nunca interpreta HTML
+        elemento.appendChild(enlace);
+        lista.appendChild(elemento);
+      }
+      lista.hidden = datos.resultados.length === 0;
+    } catch (error) {
+      ocultar();
+    }
+  }
+
+
+  entrada.addEventListener("input", () => {
+    clearTimeout(temporizador);
+    temporizador = setTimeout(pedirSugerencias, 250);
+  });
+  entrada.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") ocultar();
+  });
+  document.addEventListener("click", (evento) => {
+    if (!evento.target.closest(".buscador")) ocultar();
+  });
+})();
+</script>
+{% endblock %}

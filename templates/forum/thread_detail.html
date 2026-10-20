@@ -1,18 +1,50 @@
 {% extends "base.html" %}
+{% load forum_extras %}
 
 {% block title %}{{ thread.title }} | Forum Tech{% endblock %}
 
 {% block content %}
+<style>
+    .respuestas { display: flex; flex-direction: column; }
+    .respuestas .solucion { order: -1; border: 2px solid #2e7d32; padding: 0.5rem; }
+    .insignia-solucion { color: #2e7d32; font-weight: bold; }
+</style>
+
 <article>
     <h1>{{ thread.title }}</h1>
-    <p>Publicado por {{ thread.author.username }}</p>
+
+    {% if thread.tags.all %}
+        <p>
+            {% for etiqueta in thread.tags.all %}
+                <a href="{% url 'forum:thread_list' %}?etiquetas={{ etiqueta.name }}">{{ etiqueta }}</a>
+            {% endfor %}
+        </p>
+    {% endif %}
+
+    <p>
+        Publicado por {{ thread.author.username }}
+        {% if user.is_authenticated and user != thread.author %}
+            {% sigue_a user thread.author as ya_sigue %}
+            <form method="post"
+                  action="{% url 'forum:toggle_follow' thread.author.username %}"
+                  style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit">
+                    {% if ya_sigue %}Dejar de seguir{% else %}Seguir{% endif %}
+                </button>
+            </form>
+        {% endif %}
+    </p>
+
     {% if user.is_authenticated %}
     <p>
         <a href="{% url 'forum:report_thread' thread.pk %}">
             Reportar hilo
         </a>
     </p>
-{% endif %}
+    {% endif %}
+
     <div>{{ thread.content|linebreaksbr }}</div>
 
     <p>
@@ -45,16 +77,37 @@
 <section>
     <h2>Respuestas</h2>
 
+    <div class="respuestas">
     {% for reply in thread.replies.all %}
-        <article>
-            <p><strong>{{ reply.author.username }}</strong></p>
+        <article{% if reply.pk == thread.accepted_reply_id %} class="solucion"{% endif %}>
+            {% if reply.pk == thread.accepted_reply_id %}
+                <p class="insignia-solucion">✔ Solución aceptada</p>
+            {% endif %}
+
+            <p>
+                <strong>{{ reply.author.username }}</strong>
+                {% if user.is_authenticated and user != reply.author %}
+                    {% sigue_a user reply.author as ya_sigue_resp %}
+                    <form method="post"
+                          action="{% url 'forum:toggle_follow' reply.author.username %}"
+                          style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit">
+                            {% if ya_sigue_resp %}Dejar de seguir{% else %}Seguir{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </p>
+
             {% if user.is_authenticated %}
-    <p>
-        <a href="{% url 'forum:report_reply' reply.pk %}">
-            Reportar respuesta
-        </a>
-    </p>
-{% endif %}
+            <p>
+                <a href="{% url 'forum:report_reply' reply.pk %}">
+                    Reportar respuesta
+                </a>
+            </p>
+            {% endif %}
+
             <div>{{ reply.content|linebreaksbr }}</div>
 
             <p>
@@ -76,10 +129,19 @@
                     <span class="vote-message" role="status"></span>
                 </form>
             {% endif %}
+
+            {% if user == thread.author and reply.pk != thread.accepted_reply_id %}
+                <form method="post"
+                      action="{% url 'forum:accept_solution' reply.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">Aceptar como solución</button>
+                </form>
+            {% endif %}
         </article>
     {% empty %}
         <p>Este hilo todavía no tiene respuestas.</p>
     {% endfor %}
+    </div>
 </section>
 
 <script>
@@ -133,6 +195,7 @@ document.querySelectorAll(".vote-form").forEach((form) => {
     });
 });
 </script>
+
 <section>
     {% if thread.is_locked %}
         <p><strong>Este hilo está bloqueado y no admite respuestas.</strong></p>

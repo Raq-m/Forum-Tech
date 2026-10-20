@@ -34,3 +34,4 @@ ujson==6.0.0
 urllib3==2.8.0
 zope.interface==8.7
 channels-redis==4.3.0
+

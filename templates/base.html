@@ -8,6 +8,75 @@
         {% block title %}Forum Tech{% endblock %}
     </title>
 </head>
+{% if user.is_authenticated %}
+    <aside aria-label="Notificaciones en tiempo real">
+        <p id="notification-status" role="status"></p>
+        <a href="{% url 'forum:notifications' %}">
+            Ver mis notificaciones
+        </a>
+    </aside>
+
+    <script>
+    (() => {
+        const status = document.getElementById("notification-status");
+        const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const socketUrl =
+            `${scheme}://${window.location.host}/ws/notifications/`;
+
+        let socket;
+        let reconnectTimer;
+        let stopped = false;
+
+        function connect() {
+            if (stopped) return;
+
+            socket = new WebSocket(socketUrl);
+
+            socket.addEventListener("message", (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === "notification.created") {
+                        status.textContent =
+                            "Tienes una nueva notificación. Abre tu bandeja para verla.";
+                    }
+                } catch {
+                    status.textContent =
+                        "No se pudo interpretar el aviso recibido.";
+                }
+            });
+
+            socket.addEventListener("close", (event) => {
+                if (stopped) return;
+
+                if (event.code === 4401 || event.code === 1008) {
+                    status.textContent =
+                        "Inicia sesión de nuevo para recibir avisos en tiempo real.";
+                    return;
+                }
+
+                reconnectTimer = window.setTimeout(connect, 5000);
+            });
+        }
+
+        window.addEventListener("pagehide", () => {
+            stopped = true;
+            window.clearTimeout(reconnectTimer);
+
+            if (socket) socket.close();
+        });
+
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted) {
+                stopped = false;
+                connect();
+            }
+        });
+
+        connect();
+    })();
+    </script>
+{% endif %}
 <body>
     <header>
         <nav>

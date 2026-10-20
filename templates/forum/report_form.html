@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Reportar publicación | Forum Tech{% endblock %}
+
+{% block content %}
+<h1>Reportar publicación</h1>
+
+<p>Hilo: {{ thread.title }}</p>
+
+{% if existing_report %}
+    <p>Ya has reportado esta publicación.</p>
+    <p>Estado: {{ existing_report.get_status_display }}</p>
+{% else %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar reporte</button>
+    </form>
+{% endif %}
+
+<p>
+    <a href="{% url 'forum:thread_detail' thread.pk %}">
+        Volver al hilo
+    </a>
+</p>
+{% endblock %}

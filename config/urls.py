@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path("editor/", include("editor.urls")),
     path("accounts/", include("accounts.urls")),
+    path("forum/", include("forum.urls")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

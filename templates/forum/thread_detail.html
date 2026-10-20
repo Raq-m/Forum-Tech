@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thread.title }} | Forum Tech{% endblock %}
+
+{% block content %}
+<article>
+    <h1>{{ thread.title }}</h1>
+    <p>Publicado por {{ thread.author.username }}</p>
+    {% if user.is_authenticated %}
+    <p>
+        <a href="{% url 'forum:report_thread' thread.pk %}">
+            Reportar hilo
+        </a>
+    </p>
+{% endif %}
+    <div>{{ thread.content|linebreaksbr }}</div>
+
+    <p>
+        Puntuación:
+        <span id="thread-score">{{ thread.score }}</span>
+    </p>
+
+    {% if user.is_authenticated %}
+        <form class="vote-form"
+              method="post"
+              action="{% url 'forum:vote_thread' thread.pk %}"
+              data-score-id="thread-score">
+            {% csrf_token %}
+            <button type="submit" name="value" value="1">+1</button>
+            <button type="submit" name="value" value="-1">-1</button>
+            <button type="submit" name="value" value="0">
+                Retirar mi voto
+            </button>
+            <span class="vote-message" role="status"></span>
+        </form>
+    {% else %}
+        <p>
+            <a href="{% url 'login' %}?next={{ request.path|urlencode }}">
+                Inicia sesión para votar
+            </a>
+        </p>
+    {% endif %}
+</article>
+
+<section>
+    <h2>Respuestas</h2>
+
+    {% for reply in thread.replies.all %}
+        <article>
+            <p><strong>{{ reply.author.username }}</strong></p>
+            {% if user.is_authenticated %}
+    <p>
+        <a href="{% url 'forum:report_reply' reply.pk %}">
+            Reportar respuesta
+        </a>
+    </p>
+{% endif %}
+            <div>{{ reply.content|linebreaksbr }}</div>
+
+            <p>
+                Puntuación:
+                <span id="reply-score-{{ reply.pk }}">{{ reply.score }}</span>
+            </p>
+
+            {% if user.is_authenticated %}
+                <form class="vote-form"
+                      method="post"
+                      action="{% url 'forum:vote_reply' reply.pk %}"
+                      data-score-id="reply-score-{{ reply.pk }}">
+                    {% csrf_token %}
+                    <button type="submit" name="value" value="1">+1</button>
+                    <button type="submit" name="value" value="-1">-1</button>
+                    <button type="submit" name="value" value="0">
+                        Retirar mi voto
+                    </button>
+                    <span class="vote-message" role="status"></span>
+                </form>
+            {% endif %}
+        </article>
+    {% empty %}
+        <p>Este hilo todavía no tiene respuestas.</p>
+    {% endfor %}
+</section>
+
+<script>
+document.querySelectorAll(".vote-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const button = event.submitter;
+        if (!button) return;
+
+        const message = form.querySelector(".vote-message");
+        const buttons = form.querySelectorAll("button");
+        const data = new FormData(form);
+        data.set("value", button.value);
+
+        buttons.forEach((item) => item.disabled = true);
+        message.textContent = "Guardando...";
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: data,
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRFToken": data.get("csrfmiddlewaretoken"),
+                },
+            });
+
+            if (response.redirected) {
+                window.location.assign(response.url);
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("No se pudo guardar el voto.");
+            }
+
+            const result = await response.json();
+            document.getElementById(form.dataset.scoreId).textContent =
+                result.score;
+
+            message.textContent = result.user_vote === 0
+                ? "Voto retirado."
+                : "Voto guardado.";
+        } catch (error) {
+            message.textContent =
+                "No se pudo guardar el voto. Inténtalo de nuevo.";
+        } finally {
+            buttons.forEach((item) => item.disabled = false);
+        }
+    });
+});
+</script>
+<section>
+    {% if thread.is_locked %}
+        <p><strong>Este hilo está bloqueado y no admite respuestas.</strong></p>
+    {% elif user.is_authenticated %}
+        <h2>Escribir una respuesta</h2>
+
+        <form method="post"
+              action="{% url 'forum:reply_create' thread.pk %}">
+            {% csrf_token %}
+            <label for="reply-content">Tu respuesta</label>
+            <textarea id="reply-content"
+                      name="content"
+                      rows="5"
+                      required></textarea>
+            <button type="submit">Publicar respuesta</button>
+        </form>
+    {% else %}
+        <p>Inicia sesión para responder.</p>
+    {% endif %}
+</section>
+{% endblock %}

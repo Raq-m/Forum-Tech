@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Responder | Forum Tech{% endblock %}
+
+{% block content %}
+<h1>Responder a {{ thread.title }}</h1>
+
+<form method="post"
+      action="{% url 'forum:reply_create' thread.pk %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Publicar respuesta</button>
+</form>
+
+<p>
+    <a href="{% url 'forum:thread_detail' thread.pk %}">
+        Volver al hilo
+    </a>
+</p>
+{% endblock %}

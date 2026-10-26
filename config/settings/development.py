@@ -16,3 +16,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+# SQLite sigue disponible con DB_ENGINE=sqlite para comparar ambos motores.
+if os.getenv("DB_ENGINE", "postgresql") == "postgresql":
+    from .postgresql import database_config
+    DATABASES = {"default": database_config()}

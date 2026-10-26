@@ -8,11 +8,19 @@ El apartado 6 del documento del proyecto describe una arquitectura recomendada. 
 |---|---|
 | Frontend con renderizado en servidor (Next.js o Nuxt) para SEO | Django genera el HTML en el servidor con plantillas, así que hilos y respuestas llegan completos a los buscadores. No se usa Next.js ni Nuxt |
 | Backend en Node, Python o Go | Python con Django 5.2, y Channels con Daphne para WebSockets |
-| PostgreSQL | Hoy se usa SQLite en desarrollo. Cambiar de motor es configuración de `DATABASES` en los ajustes. La búsqueda actual funciona igual con ambos. Falta que el equipo confirme el motor de producción |
+| PostgreSQL | Desarrollo usa PostgreSQL local desde la sesión 7. SQLite sigue disponible para pruebas rápidas. Falta que el equipo confirme el motor de producción |
 | Redis para colas de notificaciones y WebSockets | Hecho para producción: `config/settings/production.py` usa `channels_redis` y exige `REDIS_URL`. En desarrollo la capa de canales va en memoria |
 | Redis para sesiones y caché de hilos populares | No implementado |
 | Meilisearch o Elasticsearch | No implementado: la búsqueda consulta la base de datos |
 | Cloudflare R2 o AWS S3 para avatares y multimedia | No implementado: las imágenes del editor se guardan en `media/` |
+
+## API REST (sesión 8)
+
+La app `api` ofrece `/api/v1/` con hilos, etiquetas y votos propios privados.
+Comparte usuarios, ORM y PostgreSQL con la web HTML. El archivo lógico y los
+votos de hilos usan servicios del foro. La autenticación utiliza sesiones Django
+con CSRF; las escrituras exigen cuenta no suspendida y la edición de hilos exige
+autoría. Swagger está en `/api/docs/`; véase [sesion_8.md](sesion_8.md).
 
 ## Configuración de producción
 

@@ -1,105 +1,90 @@
 # Forum Tech
 
-Forum Tech es una plataforma web orientada a crear una comunidad tecnológica donde los usuarios puedan plantear preguntas, iniciar debates, compartir conocimientos y aportar soluciones.
+Foro tecnológico desarrollado con Python 3.12, Django 5.2 y PostgreSQL.
+Incluye usuarios, perfiles, hilos, respuestas, etiquetas, votos, soluciones,
+seguimiento, búsquedas, moderación y notificaciones.
 
-El contenido se organiza mediante categorías, subforos y etiquetas, incorporando progresivamente perfiles de usuario, reputación, votaciones, moderación, búsqueda y notificaciones.
+## Sesión 7
 
-## Estado del proyecto
+La sesión está implementada y explicada paso a paso en
+[docs/sesion_7.md](docs/sesion_7.md). Incluye la adaptación de los ejemplos de
+Tech2Hand a Forum Tech, PostgreSQL local, integridad, índices, ORM, transacciones,
+pruebas concurrentes, EXPLAIN y copias de seguridad.
 
-Actualmente se encuentra completada la base técnica correspondiente a la **Sesión 1**:
+## Revisión del profesor: sesiones 7 y 8
 
-- Entorno virtual de Python configurado.
-- Django instalado y proyecto inicializado.
-- Aplicaciones `core`, `accounts` y `forum`.
-- Sistema de templates configurado.
-- Carpetas de archivos estáticos y media.
-- Página de inicio funcional.
-- Panel de administración de Django funcional.
-- Base de datos inicial migrada.
-- Repositorio Git configurado.
-- Requisitos funcionales RF01-RF21 definidos.
-- Requisitos no funcionales RNF01-RNF10 definidos.
+Las dos sesiones están adaptadas al dominio del foro. La sesión 7 incorpora
+PostgreSQL, restricciones, estadísticas y transacciones; la sesión 8 añade la
+API REST de hilos, etiquetas y votos, con permisos y documentación OpenAPI.
 
-La implementación de los modelos de negocio se realizará progresivamente en las siguientes sesiones.
+Para preparar una copia nueva con Python 3.12:
 
-## Tecnologías actuales
-
-- Python 3
-- Django 4.2
-- SQLite
-- HTML
-- CSS
-- JavaScript
-- Git y GitHub
-
-## Estructura principal
-
-```text
-Forum/
-├── accounts/          # Usuarios y perfiles
-├── config/            # Configuración principal de Django
-├── core/              # Funcionalidades generales
-├── forum/             # Funcionalidades del foro
-├── media/             # Archivos subidos
-├── static/
-│   ├── css/
-│   ├── images/
-│   └── js/
-├── templates/
-│   └── core/
-│       └── home.html
-├── manage.py
-└── requirements.txt
-Instalación local
-1. Clonar el repositorio
+```bash
 git clone https://github.com/malena1688/Forum-Tech.git
 cd Forum-Tech
+# Si se revisa una pull request, selecciona su rama antes de continuar.
+python3.12 -m venv .venv312
+source .venv312/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
+```
 
-2. Crear y activar el entorno virtual
-python3 -m venv .venv
-source .venv/bin/activate
+Completa `SECRET_KEY` en tu `.env`. Para una comprobación rápida con SQLite:
 
-3. Instalar las dependencias
-python3 -m pip install -r requirements.txt
+```bash
+python manage.py test --settings=config.settings.testing --noinput
+```
 
-4. Aplicar las migraciones
-python3 manage.py migrate
+Resultado verificado: 123 pruebas descubiertas, 122 correctas y una omitida
+porque necesita bloqueos reales de PostgreSQL. Para la comprobación completa,
+crea tu base y rol PostgreSQL y configura `.env` siguiendo
+[docs/sesion_7.md](docs/sesion_7.md), apartados 3 y 14. La suite PostgreSQL pasa
+las 123 pruebas, incluida la prueba concurrente.
 
-5. Ejecutar el servidor
-python3 manage.py runserver
+Para explorar la web y API sin configurar PostgreSQL todavía:
 
-La aplicación estará disponible normalmente en:
-http://127.0.0.1:8000/
-Comprobación del proyecto
-python3 manage.py check
+```bash
+DB_ENGINE=sqlite python manage.py migrate
+DB_ENGINE=sqlite python manage.py datos_demo
+DB_ENGINE=sqlite python manage.py runserver
+```
 
-Módulos principales
-core
-Contiene las funcionalidades generales del proyecto y la página de inicio.
-accounts
-Está destinado a la gestión de usuarios, autenticación y perfiles. La base para el usuario personalizado se desarrollará en la Sesión 2.
-forum
-Está destinado a las funcionalidades principales de la comunidad: categorías, subforos, hilos, respuestas, etiquetas, votaciones y otras funciones que se implementarán progresivamente.
-Funcionalidades planificadas
-- Registro, inicio y cierre de sesión.
-- Perfiles personalizables.
-- Categorías y subforos.
-- Hilos de discusión y preguntas.
-- Respuestas y soluciones aceptadas.
-- Etiquetas.
-- Votaciones y reacciones.
-- Reputación, rangos e insignias.
-- Marcadores.
-- Notificaciones.
-- Búsqueda y filtrado.
-- Feeds de contenido.
-- Moderación y reportes.
-- Contenido técnico con Markdown/WYSIWYG y bloques de código.
-Próximos pasos
-La Sesión 2 se centrará en mejorar la arquitectura y configuración del proyecto, incluyendo la separación de settings por entorno, gestión de variables de entorno y secretos, logging, base para un usuario personalizado y pruebas iniciales.
-Documentación
-La documentación de la Sesión 1 incluye:
-- Requisitos funcionales: RF01-RF21
-- Requisitos no funcionales: RNF01-RNF10
-Equipo
-Proyecto desarrollado de forma colaborativa utilizando Git y GitHub.
+Las cuentas de demostración y los pasos de revisión manual están documentados
+en [sesion_7.md](docs/sesion_7.md) y [sesion_8.md](docs/sesion_8.md).
+Las cuentas y datos locales del desarrollador no se incluyen en el repositorio.
+
+## Arranque en este equipo
+
+```bash
+source .venv312/bin/activate
+/opt/homebrew/bin/pg_ctl -D "$PWD/.local/postgresql" status
+# Si está detenido:
+/opt/homebrew/bin/pg_ctl -D "$PWD/.local/postgresql" \
+  -l "$PWD/.local/postgresql.log" \
+  -o '-p 55432 -k /tmp -h 127.0.0.1' start
+python manage.py runserver
+```
+
+Abre http://127.0.0.1:8000/forum/threads/.
+Para instalar en otro equipo sigue el apartado 3 de la guía.
+
+## Comprobaciones
+La sesión 8 incorpora una API REST adaptada a los hilos, etiquetas y votos.
+Consulta [docs/sesion_8.md](docs/sesion_8.md) para probarla con tu cuenta.
+Con el servidor arrancado:
+
+- API: http://127.0.0.1:8000/api/v1/threads/
+- Swagger: http://127.0.0.1:8000/api/docs/
+- Login de API: http://127.0.0.1:8000/api/auth/login/
+
+
+```bash
+python manage.py check
+python manage.py test --settings=config.settings.testing_postgresql --noinput
+python manage.py test --settings=config.settings.testing --noinput
+python manage.py analizar_foro
+```
+
+La base local y sus credenciales están en `.local/` y `.env`, excluidos de Git.
+SQLite sigue disponible con `DB_ENGINE=sqlite`; las pruebas rápidas lo seleccionan
+mediante `config.settings.testing`.

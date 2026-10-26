@@ -1,0 +1,30 @@
+{'total': 5, 'media_respuestas': 0.8, 'minimo_visitas': 0, 'maximo_visitas': 1}
+[{'name': 'django', 'num_hilos': 2}, {'name': 'python', 'num_hilos': 2}, {'name': 'bases-de-datos', 'num_hilos': 1}, {'name': 'docker', 'num_hilos': 1}, {'name': 'git', 'num_hilos': 1}]
+[{'title': 'Duda con Django y las vistas', 'puntuacion': 2}, {'title': 'Docker no arranca el contenedor', 'puntuacion': 1}, {'title': 'Mejor editor para empezar con Python', 'puntuacion': 0}, {'title': 'Cómo uso Git para fusionar ramas', 'puntuacion': 0}, {'title': 'Consultas con el ORM de Django', 'puntuacion': -1}]
+[{'name': 'bases-de-datos', 'media_visitas': 1.0}, {'name': 'django', 'media_visitas': 0.5}, {'name': 'docker', 'media_visitas': 0.0}, {'name': 'git', 'media_visitas': 0.0}, {'name': 'herramientas', 'media_visitas': 0.0}, {'name': 'python', 'media_visitas': 0.0}]
+SELECT "forum_thread"."id", "forum_thread"."author_id", "forum_thread"."views_count", "forum_thread"."title", "forum_thread"."content", "forum_thread"."is_deleted", "forum_thread"."is_locked", "forum_thread"."merged_into_id", "forum_thread"."created_at", "forum_thread"."updated_at", "forum_thread"."accepted_reply_id", COALESCE((SELECT SUM(U0."value") AS "total" FROM "forum_threadvote" U0 WHERE U0."thread_id" = ("forum_thread"."id") GROUP BY U0."thread_id"), 0) AS "puntuacion", COALESCE((SELECT COUNT(U0."id") AS "total" FROM "forum_reply" U0 WHERE (NOT U0."is_deleted" AND U0."thread_id" = ("forum_thread"."id")) GROUP BY U0."thread_id"), 0) AS "num_respuestas", EXISTS(SELECT 1 AS "a" FROM "forum_reply" U0 WHERE (NOT U0."is_deleted" AND U0."id" = ("forum_thread"."accepted_reply_id")) LIMIT 1) AS "esta_resuelto", "accounts_user"."id", "accounts_user"."password", "accounts_user"."last_login", "accounts_user"."is_superuser", "accounts_user"."username", "accounts_user"."first_name", "accounts_user"."last_name", "accounts_user"."is_staff", "accounts_user"."is_active", "accounts_user"."date_joined", "accounts_user"."email", "accounts_user"."phone", "accounts_user"."city", "accounts_user"."bio", "accounts_user"."avatar", "accounts_user"."suspended_until" FROM "forum_thread" INNER JOIN "accounts_user" ON ("forum_thread"."author_id" = "accounts_user"."id") WHERE (NOT "forum_thread"."is_deleted" AND "forum_thread"."merged_into_id" IS NULL) ORDER BY "forum_thread"."created_at" DESC
+Sort  (cost=52.05..52.05 rows=1 width=2830)
+  Sort Key: forum_thread.created_at DESC
+  ->  Nested Loop  (cost=0.28..52.04 rows=1 width=2830)
+        ->  Index Scan using forum_thread_merged_into_id_8938fa69 on forum_thread  (cost=0.14..8.16 rows=1 width=508)
+              Index Cond: (merged_into_id IS NULL)
+              Filter: (NOT is_deleted)
+        ->  Index Scan using accounts_user_pkey on accounts_user  (cost=0.14..8.15 rows=1 width=2305)
+              Index Cond: (id = forum_thread.author_id)
+        SubPlan 1
+          ->  GroupAggregate  (cost=4.21..14.38 rows=1 width=16)
+                ->  Bitmap Heap Scan on forum_threadvote u0  (cost=4.21..14.35 rows=7 width=10)
+                      Recheck Cond: (thread_id = forum_thread.id)
+                      ->  Bitmap Index Scan on forum_threadvote_thread_id_de13b4eb  (cost=0.00..4.21 rows=7 width=0)
+                            Index Cond: (thread_id = forum_thread.id)
+        SubPlan 2
+          ->  GroupAggregate  (cost=4.18..12.66 rows=1 width=16)
+                ->  Bitmap Heap Scan on forum_reply u0_1  (cost=4.18..12.64 rows=2 width=16)
+                      Recheck Cond: (thread_id = forum_thread.id)
+                      Filter: (NOT is_deleted)
+                      ->  Bitmap Index Scan on forum_reply_thread_id_cae3da2f  (cost=0.00..4.18 rows=4 width=0)
+                            Index Cond: (thread_id = forum_thread.id)
+        SubPlan 3
+          ->  Index Scan using forum_reply_pkey on forum_reply u0_2  (cost=0.15..8.17 rows=1 width=0)
+                Index Cond: (id = forum_thread.accepted_reply_id)
+                Filter: (NOT is_deleted)

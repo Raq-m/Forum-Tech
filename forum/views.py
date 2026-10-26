@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import IntegerField, Prefetch, Sum, Value
+from django.db.models import F, IntegerField, Prefetch, Sum, Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -17,7 +17,7 @@ from .models import (
     Thread,
     ThreadVote,
 )
-from .services import merge_threads
+from .services import merge_threads, record_thread_vote
 
 
 def save_vote(request, publication, vote_model, relation):
@@ -30,6 +30,12 @@ def save_vote(request, publication, vote_model, relation):
         )
 
     value = int(value)
+    if vote_model is ThreadVote:
+        try:
+            return JsonResponse(record_thread_vote(publication, request.user, value))
+        except ValidationError as error:
+            return JsonResponse({"error": error.messages}, status=400)
+
     lookup = {
         relation: publication,
         "user": request.user,
@@ -122,6 +128,10 @@ def thread_detail(request, pk):
             "forum:thread_detail",
             pk=thread.merged_into_id,
         )
+
+    # El incremento se calcula en SQL para conservar visitas concurrentes.
+    Thread.objects.filter(pk=thread.pk).update(views_count=F("views_count") + 1)
+    thread.views_count += 1
 
     return render(
         request,

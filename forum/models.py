@@ -8,6 +8,7 @@ class Thread(models.Model):
         on_delete=models.CASCADE,
         related_name="threads",
     )
+    views_count = models.PositiveBigIntegerField(default=0)
     title = models.CharField(max_length=200)
     content = models.TextField()
     is_deleted = models.BooleanField(default=False)
@@ -38,6 +39,9 @@ class Thread(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["is_deleted", "-created_at"], name="thread_visible_date_idx"),
+        ]
         constraints = [
             models.CheckConstraint(
                 condition=~models.Q(merged_into=models.F("pk")),
@@ -96,6 +100,10 @@ class ReplyVote(models.Model):
                 fields=["reply", "user"],
                 name="unique_reply_vote_per_user",
             ),
+            models.CheckConstraint(
+                condition=models.Q(value__in=[-1, 1]),
+                name="reply_vote_value_valid",
+            ),
         ]
 
     def __str__(self):
@@ -125,6 +133,10 @@ class ThreadVote(models.Model):
             models.UniqueConstraint(
                 fields=["thread", "user"],
                 name="unique_thread_vote_per_user",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(value__in=[-1, 1]),
+                name="thread_vote_value_valid",
             ),
         ]
 

@@ -9,3 +9,6 @@ media/
 .DS_Store
 media/
 *.bak
+.venv312/
+*.sql
+.local/

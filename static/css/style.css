@@ -1,0 +1,86 @@
+/* ===== Reset básico ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f5f6f8;
+  color: #222;
+  line-height: 1.6;
+  padding: 0 1rem;
+}
+
+/* ===== Contenedor ===== */
+.container { max-width: 960px; margin: 0 auto; }
+
+/* ===== Cabecera ===== */
+header {
+  background: #1f2937;
+  color: #fff;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+header a:hover { text-decoration: underline; }
+
+/* ===== Enlaces ===== */
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== Títulos ===== */
+h1, h2, h3 { margin: 1rem 0 .5rem; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+
+/* ===== Posts / tarjetas ===== */
+.post, .card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.post h2, .card h2 { margin-top: 0; }
+.post .meta, .card .meta { color: #6b7280; font-size: .875rem; }
+
+/* ===== Botones ===== */
+button, .btn {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+button:hover, .btn:hover { background: #1d4ed8; text-decoration: none; }
+
+/* ===== Formularios ===== */
+input, textarea, select {
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: .75rem;
+}
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid #2563eb;
+  border-color: #2563eb;
+}
+
+/* ===== Listas ===== */
+ul { padding-left: 1.25rem; }
+
+/* ===== Código (convive con codehilite) ===== */
+pre, code { font-family: ui-monospace, Consolas, monospace; }
+pre { padding: 1rem; border-radius: 8px; overflow-x: auto; }
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}

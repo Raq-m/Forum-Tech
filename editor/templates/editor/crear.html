@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Crear hilo · Forum Tech{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
+<style>
+    .tarjeta-enlace { display: flex; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; max-width: 560px; margin: 0.5rem 0; }
+    .tarjeta-enlace img { width: 140px; object-fit: cover; }
+    .tarjeta-enlace div { padding: 0.5rem 0.75rem; }
+    .tarjeta-enlace p { margin: 0.2rem 0; }
+    .tarjeta-enlace .dominio { font-size: 0.8rem; color: #666; }
+    .tarjeta-enlace .titulo { font-weight: bold; }
+    .tarjeta-enlace .descripcion { font-size: 0.9rem; color: #444; }
+    .mencion { background: #e8f0fe; color: #1a56db; padding: 0 0.25rem; border-radius: 4px; }
+    .video { aspect-ratio: 16 / 9; max-width: 560px; }
+    .video iframe { width: 100%; height: 100%; border: 0; }
+    #barra { margin-bottom: 0.5rem; display: flex; gap: 0.5rem; }
+    #barra button { padding: 0.3rem 0.8rem; cursor: pointer; }
+    #vista-previa img { max-width: 100%; }
+    .cajas { display: flex; gap: 1rem; }
+    textarea, #vista-previa {
+      width: 50%; min-height: 350px; padding: 1rem;
+      border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
+    }
+    .codehilite { padding: 0.5rem 1rem; border-radius: 6px; overflow-x: auto; }
+    .campo { margin-bottom: 0.8rem; }
+    .campo label { display: block; font-weight: bold; margin-bottom: 0.2rem; }
+    .campo input[type="text"] { width: 100%; padding: 0.4rem; box-sizing: border-box; }
+    .errores { color: red; margin-bottom: 1rem; }
+</style>
+
+<h1>Crear nuevo hilo</h1>
+
+{% if errores %}
+  <ul class="errores">
+    {% for error in errores %}<li>{{ error }}</li>{% endfor %}
+  </ul>
+{% endif %}
+
+<form method="post" id="form-crear">
+  {% csrf_token %}
+
+  <div class="campo">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" name="titulo" maxlength="200"
+           value="{{ titulo|default:'' }}" required>
+  </div>
+
+  <div class="campo">
+    <label for="etiquetas">Etiquetas (separadas por comas, ej: python, django)</label>
+    <input type="text" id="etiquetas" name="etiquetas"
+           value="{{ etiquetas|default:'' }}">
+  </div>
+
+  <div class="campo">
+    <label for="texto">Contenido</label>
+  </div>
+
+  <div id="barra">
+    <button type="button" data-envolver="**" title="Ctrl+B">Negrita</button>
+    <button type="button" data-envolver="*" title="Ctrl+I">Cursiva</button>
+    <button type="button" data-envolver="`">Código</button>
+    <button type="button" data-bloque>Bloque de código</button>
+    <button type="button" data-enlace title="Ctrl+K">Enlace</button>
+  </div>
+  <div class="cajas">
+    <textarea id="texto" name="texto" placeholder="Escribe en Markdown aquí..." required>{{ texto|default:'' }}</textarea>
+    <div id="vista-previa"></div>
+  </div>
+
+  <p style="margin-top: 1rem;">
+    <button type="submit">Publicar hilo</button>
+    <a href="{% url 'forum:thread_list' %}">Cancelar</a>
+  </p>
+</form>
+
+<script>
+  const texto = document.getElementById("texto");
+  const vista = document.getElementById("vista-previa");
+  const token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+  let temporizador;
+
+  // Vista previa en vivo (solo si hay texto ya escrito al cargar, o al escribir)
+  async function actualizarVistaPrevia() {
+    const datos = new FormData();
+    datos.append("texto", texto.value);
+    const respuesta = await fetch("{% url 'editor:vista_previa' %}", {
+      method: "POST",
+      headers: { "X-CSRFToken": token },
+      body: datos,
+    });
+    const resultado = await respuesta.json();
+    vista.innerHTML = resultado.html;
+    clearTimeout(temporizador);
+    temporizador = setTimeout(() => cargarTarjetas(vista), 800);
+  }
+
+  texto.addEventListener("input", actualizarVistaPrevia);
+
+  // Al cargar, si hay contenido (por ejemplo tras un error de validación), pinta la vista previa
+  if (texto.value.trim()) actualizarVistaPrevia();
+
+  texto.addEventListener("dragover", (e) => e.preventDefault());
+  texto.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    for (const archivo of e.dataTransfer.files) {
+      if (!archivo.type.startsWith("image/")) continue;
+
+      const datos = new FormData();
+      datos.append("imagen", archivo);
+      const respuesta = await fetch("{% url 'editor:subir_imagen' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": token },
+        body: datos,
+      });
+      const resultado = await respuesta.json();
+      if (!respuesta.ok) { alert(resultado.error); continue; }
+
+      texto.setRangeText(
+        `\n![${archivo.name}](${resultado.url})\n`,
+        texto.selectionStart, texto.selectionEnd, "end"
+      );
+      texto.dispatchEvent(new Event("input"));
+    }
+  });
+
+  function envolver(simbolo) {
+    const ini = texto.selectionStart, fin = texto.selectionEnd;
+    const seleccion = texto.value.slice(ini, fin) || "texto";
+    texto.setRangeText(simbolo + seleccion + simbolo, ini, fin, "select");
+    texto.focus();
+    texto.dispatchEvent(new Event("input"));
+  }
+
+  function bloqueCodigo() {
+    const ini = texto.selectionStart, fin = texto.selectionEnd;
+    const seleccion = texto.value.slice(ini, fin) || "tu código aquí";
+    texto.setRangeText("\n```python\n" + seleccion + "\n```\n", ini, fin, "select");
+    texto.focus();
+    texto.dispatchEvent(new Event("input"));
+  }
+
+  function enlace() {
+    const ini = texto.selectionStart, fin = texto.selectionEnd;
+    const seleccion = texto.value.slice(ini, fin) || "texto";
+    texto.setRangeText("[" + seleccion + "](https://)", ini, fin, "end");
+    texto.focus();
+    texto.dispatchEvent(new Event("input"));
+  }
+
+  document.getElementById("barra").addEventListener("click", (e) => {
+    const boton = e.target.closest("button");
+    if (!boton) return;
+    if (boton.dataset.envolver) envolver(boton.dataset.envolver);
+    else if (boton.dataset.bloque !== undefined) bloqueCodigo();
+    else if (boton.dataset.enlace !== undefined) enlace();
+  });
+
+  texto.addEventListener("keydown", (e) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const tecla = e.key.toLowerCase();
+    if (tecla === "b") { e.preventDefault(); envolver("**"); }
+    else if (tecla === "i") { e.preventDefault(); envolver("*"); }
+    else if (tecla === "k") { e.preventDefault(); enlace(); }
+  });
+
+  const cacheTarjetas = new Map();
+
+  function crearTarjeta(t) {
+    const a = document.createElement("a");
+    a.className = "tarjeta-enlace";
+    a.href = t.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer nofollow";
+    if (t.imagen) {
+      const img = document.createElement("img");
+      img.src = t.imagen;
+      img.alt = "";
+      a.appendChild(img);
+    }
+    const cuerpo = document.createElement("div");
+    for (const [clase, valor] of [["dominio", t.dominio], ["titulo", t.titulo], ["descripcion", t.descripcion]]) {
+      if (!valor) continue;
+      const p = document.createElement("p");
+      p.className = clase;
+      p.textContent = valor;
+      cuerpo.appendChild(p);
+    }
+    a.appendChild(cuerpo);
+    return a;
+  }
+
+  async function cargarTarjetas(contenedor) {
+    for (const enlace of contenedor.querySelectorAll("a.enlace-solo")) {
+      const url = enlace.href;
+      if (!cacheTarjetas.has(url)) {
+        const datos = new FormData();
+        datos.append("url", url);
+        cacheTarjetas.set(url, fetch("{% url 'editor:previsualizar_enlace' %}", {
+          method: "POST", headers: { "X-CSRFToken": token }, body: datos,
+        }).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+      }
+      const tarjeta = await cacheTarjetas.get(url);
+      if (!tarjeta || !enlace.isConnected) continue;
+      (enlace.closest("p") || enlace).replaceWith(crearTarjeta(tarjeta));
+    }
+  }
+</script>
+{% endblock %}

@@ -5,6 +5,7 @@ from . import views
 app_name = "editor"
 
 urlpatterns = [
+    path("crear/", views.crear_post, name="crear"),
     path("probar/", views.probar_editor, name="probar"),
     path("vista-previa/", views.vista_previa, name="vista_previa"),
     path("subir-imagen/", views.subir_imagen, name="subir_imagen"),

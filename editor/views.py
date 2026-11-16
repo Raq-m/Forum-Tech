@@ -11,6 +11,10 @@ from PIL import Image
 
 from .templatetags.markdown_extras import markdown_a_html
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from forum.models import Thread, Tag
+
 def login_json(vista):
     """Si no has iniciado sesión, responde 401 en vez de ejecutar la vista."""
     @wraps(vista)
@@ -66,3 +70,37 @@ def previsualizar_enlace(request):
     if tarjeta is None:
         return JsonResponse({"error": "Sin previsualización."}, status=400)
     return JsonResponse(tarjeta)
+
+@login_required
+def crear_post(request):
+    if request.method == "POST":
+        titulo = request.POST.get("titulo", "").strip()
+        contenido = request.POST.get("texto", "").strip()
+        etiquetas = request.POST.get("etiquetas", "").strip()
+
+        errores = []
+        if not titulo:
+            errores.append("El título es obligatorio.")
+        elif len(titulo) > 200:
+            errores.append("El título no puede superar 200 caracteres.")
+        if not contenido:
+            errores.append("El contenido es obligatorio.")
+
+        if not errores:
+            hilo = Thread.objects.create(
+                author=request.user,
+                title=titulo,
+                content=contenido,
+            )
+            if etiquetas:
+                hilo.tags.set(Tag.desde_texto(etiquetas))
+            return redirect("forum:thread_detail", pk=hilo.pk)
+
+        return render(request, "editor/crear.html", {
+            "errores": errores,
+            "titulo": titulo,
+            "texto": contenido,
+            "etiquetas": etiquetas,
+        })
+
+    return render(request, "editor/crear.html")

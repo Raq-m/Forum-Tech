@@ -19,7 +19,9 @@
 </style>
 
 <h1>Hilos</h1>
-
+<p>
+  <a href="{% url 'editor:crear' %}" class="btn btn-primary">Crear nuevo hilo</a>
+</p>
 <nav aria-label="Feeds">
   {% for clave, nombre in feeds %}
     {% if clave == feed %}

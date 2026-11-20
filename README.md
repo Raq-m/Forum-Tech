@@ -1,90 +1,399 @@
-# Forum Tech
+# Forum-Tech
 
-Foro tecnológico desarrollado con Python 3.12, Django 5.2 y PostgreSQL.
-Incluye usuarios, perfiles, hilos, respuestas, etiquetas, votos, soluciones,
-seguimiento, búsquedas, moderación y notificaciones.
+**Foro de desarrollo tecnológico creado con Python y Django.**
 
-## Sesión 7
+Forum-Tech es una aplicación web que permite compartir conocimientos, publicar preguntas, responder a otros usuarios y participar en una comunidad de aprendizaje sobre programación y tecnología.
 
-La sesión está implementada y explicada paso a paso en
-[docs/sesion_7.md](docs/sesion_7.md). Incluye la adaptación de los ejemplos de
-Tech2Hand a Forum Tech, PostgreSQL local, integridad, índices, ORM, transacciones,
-pruebas concurrentes, EXPLAIN y copias de seguridad.
+Este documento explica cómo descargar, instalar, configurar y ejecutar el proyecto.
 
-## Revisión del profesor: sesiones 7 y 8
+---
 
-Las dos sesiones están adaptadas al dominio del foro. La sesión 7 incorpora
-PostgreSQL, restricciones, estadísticas y transacciones; la sesión 8 añade la
-API REST de hilos, etiquetas y votos, con permisos y documentación OpenAPI.
+# 1. Características principales
 
-Para preparar una copia nueva con Python 3.12:
+- Registro e inicio de sesión de usuarios.
+- Creación y publicación de hilos.
+- Respuestas a publicaciones.
+- Votación de hilos y respuestas.
+- Aceptación de respuestas como solución.
+- Seguimiento de usuarios.
+- Sistema de notificaciones.
+- Denuncia de publicaciones y respuestas.
+- Etiquetas para clasificar contenidos.
+- API REST.
+- Documentación de API con Swagger y ReDoc.
+- Panel de administración de Django.
+
+# 2. Requisitos previos
+
+Antes de comenzar, necesitas tener instaladas las siguientes herramientas:
+
+| Herramienta | Versión utilizada o recomendada |
+|---|---|
+| Python | 3.12 |
+| Git | Versión estable |
+| pip | Incluido con Python |
+| Visual Studio Code | Recomendado |
+
+## 2.1. Python
+
+Descarga Python desde su página oficial:
+
+https://www.python.org/downloads/
+
+Se recomienda Python 3.12.
+
+En Windows, durante la instalación, activa la opción `Add Python to PATH`.
+
+Comprueba la instalación:
+
+**Windows:**
+
+```powershell
+py --version
+```
+
+**macOS y Linux:**
+
+```bash
+python3 --version
+```
+
+## 2.2. Git
+
+Descarga Git desde:
+
+https://git-scm.com/downloads
+
+Comprueba la instalación:
+
+```bash
+git --version
+```
+
+## 2.3. Visual Studio Code
+
+Descarga Visual Studio Code desde:
+
+https://code.visualstudio.com/
+
+Es el editor recomendado para trabajar con el proyecto.
+
+# 3. Descargar el proyecto
+
+Abre una terminal y ejecuta:
 
 ```bash
 git clone https://github.com/malena1688/Forum-Tech.git
+```
+
+Entra en la carpeta del proyecto:
+
+```bash
 cd Forum-Tech
-# Si se revisa una pull request, selecciona su rama antes de continuar.
-python3.12 -m venv .venv312
-source .venv312/bin/activate
+```
+
+Para abrirlo en Visual Studio Code:
+
+```bash
+code .
+```
+
+Si el comando anterior no está disponible, abre Visual Studio Code y selecciona la carpeta `Forum-Tech` desde el menú Archivo.
+
+# 4. Crear un entorno virtual
+
+El entorno virtual permite instalar las dependencias del proyecto de forma aislada.
+
+**Windows (PowerShell):**
+
+```powershell
+py -3.12 -m venv .venv
+```
+
+Activar:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Si PowerShell bloquea la activación, puedes permitirla temporalmente en la sesión actual:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Después vuelve a ejecutar el comando de activación.
+
+**Windows (CMD):**
+
+```cmd
+py -3.12 -m venv .venv
+.venv\Scripts\activate.bat
+```
+
+**macOS y Linux:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Cuando el entorno virtual esté activado, aparecerá `(.venv)` al principio de la línea de comandos.
+
+# 5. Instalar las dependencias
+
+**IMPORTANTE: Este paso es obligatorio antes de ejecutar Forum-Tech.**
+
+El proyecto incluye un archivo `requirements.txt` que contiene las librerías necesarias y sus versiones.
+
+Con el entorno virtual activado, actualiza pip:
+
+```bash
+python -m pip install --upgrade pip
+```
+
+Instala todas las dependencias:
+
+```bash
 python -m pip install -r requirements.txt
-cp .env.example .env
 ```
 
-Completa `SECRET_KEY` en tu `.env`. Para una comprobación rápida con SQLite:
+Espera a que termine la instalación antes de continuar.
+
+# 6. Configurar la base de datos SQLite
+
+Forum-Tech permite utilizar SQLite para realizar una instalación local y probar la aplicación.
+
+SQLite no necesita instalar un servidor de base de datos independiente.
+
+El proyecto selecciona SQLite cuando se configura la variable de entorno:
+
+`DB_ENGINE=sqlite`
+
+La forma de establecer esta variable depende de la terminal utilizada.
+
+**Windows (PowerShell):**
+
+```powershell
+$env:DB_ENGINE="sqlite"
+```
+
+**Windows (CMD):**
+
+```cmd
+set DB_ENGINE=sqlite
+```
+
+**macOS:**
 
 ```bash
-python manage.py test --settings=config.settings.testing --noinput
+export DB_ENGINE=sqlite
 ```
 
-Resultado verificado: 123 pruebas descubiertas, 122 correctas y una omitida
-porque necesita bloqueos reales de PostgreSQL. Para la comprobación completa,
-crea tu base y rol PostgreSQL y configura `.env` siguiendo
-[docs/sesion_7.md](docs/sesion_7.md), apartados 3 y 14. La suite PostgreSQL pasa
-las 123 pruebas, incluida la prueba concurrente.
-
-Para explorar la web y API sin configurar PostgreSQL todavía:
+**Linux:**
 
 ```bash
-DB_ENGINE=sqlite python manage.py migrate
-DB_ENGINE=sqlite python manage.py datos_demo
-DB_ENGINE=sqlite python manage.py runserver
+export DB_ENGINE=sqlite
 ```
 
-Las cuentas de demostración y los pasos de revisión manual están documentados
-en [sesion_7.md](docs/sesion_7.md) y [sesion_8.md](docs/sesion_8.md).
-Las cuentas y datos locales del desarrollador no se incluyen en el repositorio.
+Esta configuración se mantiene en la terminal actual. Si abres otra terminal, tendrás que establecer la variable de nuevo.
 
-## Arranque en este equipo
+# 7. Ejecutar las migraciones
+
+Las migraciones crean las tablas necesarias para almacenar los usuarios, publicaciones, respuestas y demás información del proyecto.
+
+Con el entorno virtual activado y SQLite configurado, ejecuta:
 
 ```bash
-source .venv312/bin/activate
-/opt/homebrew/bin/pg_ctl -D "$PWD/.local/postgresql" status
-# Si está detenido:
-/opt/homebrew/bin/pg_ctl -D "$PWD/.local/postgresql" \
-  -l "$PWD/.local/postgresql.log" \
-  -o '-p 55432 -k /tmp -h 127.0.0.1' start
-python manage.py runserver
+python manage.py migrate
 ```
 
-Abre http://127.0.0.1:8000/forum/threads/.
-Para instalar en otro equipo sigue el apartado 3 de la guía.
+# 8. Crear un usuario administrador
 
-## Comprobaciones
-La sesión 8 incorpora una API REST adaptada a los hilos, etiquetas y votos.
-Consulta [docs/sesion_8.md](docs/sesion_8.md) para probarla con tu cuenta.
-Con el servidor arrancado:
+Para acceder al panel de administración de Django, crea un superusuario:
 
-- API: http://127.0.0.1:8000/api/v1/threads/
-- Swagger: http://127.0.0.1:8000/api/docs/
-- Login de API: http://127.0.0.1:8000/api/auth/login/
+```bash
+python manage.py createsuperuser
+```
 
+Django solicitará:
+
+- Nombre de usuario.
+- Dirección de correo electrónico.
+- Contraseña.
+
+Guarda las credenciales para poder acceder posteriormente.
+
+# 9. Comprobar la instalación
+
+Antes de iniciar el servidor, comprueba que la configuración del proyecto es correcta:
 
 ```bash
 python manage.py check
-python manage.py test --settings=config.settings.testing_postgresql --noinput
-python manage.py test --settings=config.settings.testing --noinput
-python manage.py analizar_foro
 ```
 
-La base local y sus credenciales están en `.local/` y `.env`, excluidos de Git.
-SQLite sigue disponible con `DB_ENGINE=sqlite`; las pruebas rápidas lo seleccionan
-mediante `config.settings.testing`.
+Si todo está correctamente configurado, Django mostrará un mensaje indicando que no se han detectado problemas.
+
+# 10. Iniciar el servidor
+
+Para arrancar Forum-Tech en local:
+
+```bash
+python manage.py runserver
+```
+
+Si el servidor se inicia correctamente, Django mostrará una dirección similar a:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Abre esa dirección en el navegador para acceder a la aplicación.
+
+Para detener el servidor, pulsa `CTRL + C` en la terminal.
+
+# 11. Accesos principales
+
+Con el servidor en funcionamiento, puedes acceder a las siguientes direcciones:
+
+| Servicio | Dirección |
+|---|---|
+| Aplicación Forum-Tech | http://127.0.0.1:8000/ |
+| Panel de administración | http://127.0.0.1:8000/admin/ |
+| API REST | http://127.0.0.1:8000/api/v1/ |
+| Especificación OpenAPI | http://127.0.0.1:8000/api/schema/ |
+| Documentación Swagger | http://127.0.0.1:8000/api/docs/ |
+| Documentación ReDoc | http://127.0.0.1:8000/api/redoc/ |
+
+# 12. Configuración de PostgreSQL
+
+Forum-Tech también dispone de configuración para utilizar PostgreSQL.
+
+En el proyecto, PostgreSQL es el motor predeterminado cuando no se indica otro mediante `DB_ENGINE`.
+
+La configuración de conexión utiliza:
+
+| Variable | Descripción | Valor predeterminado |
+|---|---|---|
+| POSTGRES_DB | Nombre de la base de datos | Obligatoria |
+| POSTGRES_USER | Usuario de PostgreSQL | Obligatoria |
+| POSTGRES_PASSWORD | Contraseña | Obligatoria |
+| POSTGRES_HOST | Dirección del servidor | 127.0.0.1 |
+| POSTGRES_PORT | Puerto de conexión | 5432 |
+
+## 12.1. Crear el archivo .env
+
+En la carpeta principal del proyecto, crea un archivo llamado `.env`.
+
+Su estructura debe ser:
+
+```env
+POSTGRES_DB=nombre_de_la_base_de_datos
+POSTGRES_USER=nombre_del_usuario
+POSTGRES_PASSWORD=contraseña_del_usuario
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+```
+
+Sustituye los valores de ejemplo por los datos de tu instalación de PostgreSQL.
+
+El proyecto utiliza `python-dotenv` para cargar automáticamente el archivo `.env` desde la carpeta principal.
+
+No es necesario cargarlo manualmente.
+
+**IMPORTANTE:** No compartas el archivo `.env` ni publiques tus contraseñas en GitHub.
+
+## 12.2. Comprobar la configuración
+
+Una vez configurada la base de datos y creado el archivo `.env`, con PostgreSQL disponible y el entorno virtual activado, ejecuta:
+
+```bash
+python manage.py check
+```
+
+Después, para crear las tablas:
+
+```bash
+python manage.py migrate
+```
+
+Para crear el usuario administrador:
+
+```bash
+python manage.py createsuperuser
+```
+
+Para iniciar el servidor:
+
+```bash
+python manage.py runserver
+```
+
+Para utilizar PostgreSQL no debes establecer `DB_ENGINE=sqlite`.
+
+# 13. Solución de problemas habituales
+
+### Python no se reconoce como comando
+
+Comprueba que Python está instalado y que se ha añadido al PATH en Windows.
+
+### No se puede activar el entorno virtual en PowerShell
+
+Ejecuta:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Después vuelve a activar el entorno virtual.
+
+### Error: No module named django
+
+Comprueba que el entorno virtual está activado e instala las dependencias:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### Error: No such table
+
+Ejecuta las migraciones:
+
+```bash
+python manage.py migrate
+```
+
+### Error: faltan las variables de PostgreSQL
+
+Comprueba que el archivo `.env` existe en la carpeta principal y contiene:
+
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+
+### El puerto 8000 está ocupado
+
+Puedes iniciar Django utilizando otro puerto:
+
+```bash
+python manage.py runserver 8001
+```
+
+En ese caso, accede a:
+
+http://127.0.0.1:8001/
+
+# 14. Recomendaciones importantes
+
+- Activa siempre el entorno virtual antes de trabajar con Django.
+- Instala las dependencias de `requirements.txt` antes de iniciar el servidor.
+- Ejecuta las migraciones cuando corresponda.
+- No compartas contraseñas ni archivos `.env`.
+- No publiques credenciales privadas en el repositorio.
+- El servidor de desarrollo de Django está pensado para pruebas locales, no para producción.
+
+---
+
+**Forum-Tech**
+
+Proyecto desarrollado con Python y Django para compartir conocimientos, resolver dudas y aprender sobre tecnología y desarrollo de software.

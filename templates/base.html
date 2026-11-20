@@ -1,110 +1,160 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        {% block title %}Forum Tech{% endblock %}
-    </title>
-    {% load static %}
-<link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}Forum Tech{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'editor/codehilite.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-{% if user.is_authenticated %}
-    <aside aria-label="Notificaciones en tiempo real">
-        <p id="notification-status" role="status"></p>
-        <a href="{% url 'forum:notifications' %}">
-            Ver mis notificaciones
-        </a>
-    </aside>
 
-    <script>
-    (() => {
-        const status = document.getElementById("notification-status");
-        const scheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const socketUrl =
-            `${scheme}://${window.location.host}/ws/notifications/`;
-
-        let socket;
-        let reconnectTimer;
-        let stopped = false;
-
-        function connect() {
-            if (stopped) return;
-
-            socket = new WebSocket(socketUrl);
-
-            socket.addEventListener("message", (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-
-                    if (data.type === "notification.created") {
-                        status.textContent =
-                            "Tienes una nueva notificación. Abre tu bandeja para verla.";
-                    }
-                } catch {
-                    status.textContent =
-                        "No se pudo interpretar el aviso recibido.";
-                }
-            });
-
-            socket.addEventListener("close", (event) => {
-                if (stopped) return;
-
-                if (event.code === 4401 || event.code === 1008) {
-                    status.textContent =
-                        "Inicia sesión de nuevo para recibir avisos en tiempo real.";
-                    return;
-                }
-
-                reconnectTimer = window.setTimeout(connect, 5000);
-            });
-        }
-
-        window.addEventListener("pagehide", () => {
-            stopped = true;
-            window.clearTimeout(reconnectTimer);
-
-            if (socket) socket.close();
-        });
-
-        window.addEventListener("pageshow", (event) => {
-            if (event.persisted) {
-                stopped = false;
-                connect();
-            }
-        });
-
-        connect();
-    })();
-    </script>
-{% endif %}
 <body>
-    <header>
-        <nav>
-            <a href="{% url 'core:home' %}">Forum Tech</a>
-<a href="{% url 'forum:thread_list' %}">Hilos</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'chat:inbox' %}">Mensajes</a>
-                <a href="{% url 'profile' %}">Mi perfil</a>
-                <a href="{% url 'edit_profile' %}">Editar perfil</a>
 
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Cerrar sesión</button>
-                </form>
+    <header class="ft-header">
+
+        <div class="ft-header-brand">
+            <a href="{% url 'core:home' %}" class="ft-brand">
+                <img src="{% static 'icons/message-circle.svg' %}" alt="" class="ft-brand-icon">
+                <span class="ft-brand-text">Forum Tech</span>
+                <img src="{% static 'icons/code.svg' %}" alt="" class="ft-brand-code">
+            </a>
+        </div>
+
+        <nav class="ft-nav-links" aria-label="Navegación principal">
+
+            <a href="{% url 'forum:thread_list' %}">
+                <img src="{% static 'icons/message-circle.svg' %}" alt="" class="ft-icon">
+                Hilos
+            </a>
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'chat:inbox' %}">
+                <img src="{% static 'icons/mail.svg' %}" alt="" class="ft-icon">
+                Mensajes
+            </a>
+
+            <a href="{% url 'profile' %}">
+                <img src="{% static 'icons/user-round.svg' %}" alt="" class="ft-icon">
+                Mi perfil
+            </a>
+
+            <a href="{% url 'edit_profile' %}">
+                <img src="{% static 'icons/user-plus.svg' %}" alt="" class="ft-icon">
+                Editar perfil
+            </a>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">
+                    <img src="{% static 'icons/log-out.svg' %}" alt="" class="ft-icon">
+                    Cerrar sesión
+                </button>
+            </form>
+
             {% else %}
-                <a href="{% url 'login' %}">Iniciar sesión</a>
-                <a href="{% url 'register' %}">Registrarse</a>
+
+            <a href="{% url 'login' %}">
+                <img src="{% static 'icons/log-in.svg' %}" alt="" class="ft-icon">
+                Iniciar sesión
+            </a>
+
+            <a href="{% url 'register' %}">
+                <img src="{% static 'icons/user-plus.svg' %}" alt="" class="ft-icon">
+                Registrarse
+            </a>
+
             {% endif %}
+
         </nav>
     </header>
+    {% if user.is_authenticated %}
+
+    <!-- FRANJA DE NOTIFICACIONES -->
+    <aside aria-label="Notificaciones en tiempo real">
+
+        <p id="notification-status" role="status"></p>
+
+        <a href="{% url 'forum:notifications' %}">
+            <img src="{% static 'icons/bell.svg' %}" alt="" class="ft-icon">
+            Ver mis notificaciones
+        </a>
+
+    </aside>
+
+    <!-- NOTIFICACIONES EN TIEMPO REAL -->
+    <script>
+        (() => {
+            const status = document.getElementById("notification-status");
+            const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+            const socketUrl =
+                `${scheme}://${window.location.host}/ws/notifications/`;
+
+            let socket;
+            let reconnectTimer;
+            let stopped = false;
+
+            function connect() {
+                if (stopped) return;
+
+                socket = new WebSocket(socketUrl);
+
+                socket.addEventListener("message", (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        if (data.type === "notification.created") {
+                            status.textContent =
+                                "Tienes una nueva notificación. Abre tu bandeja para verla.";
+                        }
+                    } catch {
+                        status.textContent =
+                            "No se pudo interpretar el aviso recibido.";
+                    }
+                });
+
+                socket.addEventListener("close", (event) => {
+                    if (stopped) return;
+
+                    if (event.code === 4401 || event.code === 1008) {
+                        status.textContent =
+                            "Inicia sesión de nuevo para recibir avisos en tiempo real.";
+                        return;
+                    }
+
+                    reconnectTimer = window.setTimeout(connect, 5000);
+                });
+            }
+
+            window.addEventListener("pagehide", () => {
+                stopped = true;
+                window.clearTimeout(reconnectTimer);
+
+                if (socket) socket.close();
+            });
+
+            window.addEventListener("pageshow", (event) => {
+                if (event.persisted) {
+                    stopped = false;
+                    connect();
+                }
+            });
+
+            connect();
+        })();
+    </script>
+
+    {% endif %}
 
     <main>
         {% block content %}
         {% endblock %}
     </main>
+
 </body>
+
 </html>

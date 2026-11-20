@@ -1,46 +1,64 @@
 {% extends "base.html" %}
+{% load static %}
 {% load forum_extras %}
-{% load markdown_extras %}  
+{% load markdown_extras %}
 {% block title %}{{ thread.title }} | Forum Tech{% endblock %}
 
 {% block content %}
 <p>{{ thread.views_count }} visitas</p>
 <style>
-    .respuestas { display: flex; flex-direction: column; }
-    .respuestas .solucion { order: -1; border: 2px solid #2e7d32; padding: 0.5rem; }
-    .insignia-solucion { color: #2e7d32; font-weight: bold; }
+    .respuestas {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .respuestas .solucion {
+        order: -1;
+        border: 2px solid #2e7d32;
+        padding: 0.5rem;
+    }
+
+    .insignia-solucion {
+        color: #2e7d32;
+        font-weight: bold;
+    }
 </style>
 
 <article>
-    <h1>{{ thread.title }}</h1>
+    <h1>
+        <img src="{% static 'icons/message-circle.svg' %}" alt="" class="ft-icon">
+        {{ thread.title }}
+    </h1>
 
     {% if thread.tags.all %}
-        <p>
-            {% for etiqueta in thread.tags.all %}
-                <a href="{% url 'forum:thread_list' %}?etiquetas={{ etiqueta.name }}">{{ etiqueta }}</a>
-            {% endfor %}
-        </p>
+    <p>
+        <img src="{% static 'icons/tag.svg' %}" alt="" class="ft-icon">
+        {% for etiqueta in thread.tags.all %}
+        <a href="{% url 'forum:thread_list' %}?etiquetas={{ etiqueta.name }}">{{ etiqueta }}</a>
+        {% endfor %}
+    </p>
     {% endif %}
 
     <p>
+        <img src="{% static 'icons/user-round.svg' %}" alt="" class="ft-icon">
         Publicado por {{ thread.author.username }}
         {% if user.is_authenticated and user != thread.author %}
-            {% sigue_a user thread.author as ya_sigue %}
-            <form method="post"
-                  action="{% url 'forum:toggle_follow' thread.author.username %}"
-                  style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.path }}">
-                <button type="submit">
-                    {% if ya_sigue %}Dejar de seguir{% else %}Seguir{% endif %}
-                </button>
-            </form>
-        {% endif %}
+        {% sigue_a user thread.author as ya_sigue %}
+    <form method="post" action="{% url 'forum:toggle_follow' thread.author.username %}" style="display: inline;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit">
+            <img src="{% static 'icons/feed-follow.svg' %}" alt="" class="ft-icon">
+            {% if ya_sigue %}Dejar de seguir{% else %}Seguir{% endif %}
+        </button>
+    </form>
+    {% endif %}
     </p>
 
     {% if user.is_authenticated %}
     <p>
         <a href="{% url 'forum:report_thread' thread.pk %}">
+            <img src="{% static 'icons/feed-question.svg' %}" alt="" class="ft-icon">
             Reportar hilo
         </a>
     </p>
@@ -49,61 +67,69 @@
     <div>{{ thread.content|markdown }}</div>
 
     <p>
+        <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon">
         Puntuación:
         <span id="thread-score">{{ thread.score }}</span>
     </p>
-
     {% if user.is_authenticated %}
-        <form class="vote-form"
-              method="post"
-              action="{% url 'forum:vote_thread' thread.pk %}"
-              data-score-id="thread-score">
-            {% csrf_token %}
-            <button type="submit" name="value" value="1">+1</button>
-            <button type="submit" name="value" value="-1">-1</button>
-            <button type="submit" name="value" value="0">
-                Retirar mi voto
-            </button>
-            <span class="vote-message" role="status"></span>
-        </form>
+    <form class="vote-form" method="post" action="{% url 'forum:vote_thread' thread.pk %}" data-score-id="thread-score">
+        {% csrf_token %}
+        <button type="submit" name="value" value="1">
+            <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon">
+            +1
+        </button>
+        <button type="submit" name="value" value="-1">
+            <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon" style="transform: rotate(180deg);">
+            -1
+        </button>
+        <button type="submit" name="value" value="0">
+            <img src="{% static 'icons/trash-2.svg' %}" alt="" class="ft-icon">
+            Retirar mi voto
+        </button>
+        <span class="vote-message" role="status"></span>
+    </form>
     {% else %}
-        <p>
-            <a href="{% url 'login' %}?next={{ request.path|urlencode }}">
-                Inicia sesión para votar
-            </a>
-        </p>
+    <p>
+        <a href="{% url 'login' %}?next={{ request.path|urlencode }}">
+            Inicia sesión para votar
+        </a>
+    </p>
     {% endif %}
 </article>
 
 <section>
-    <h2>Respuestas</h2>
+    <h2>
+        <img src="{% static 'icons/message-circle.svg' %}" alt="" class="ft-icon">
+        Respuestas
+    </h2>
 
     <div class="respuestas">
-    {% for reply in thread.replies.all %}
-        <article{% if reply.pk == thread.accepted_reply_id %} class="solucion"{% endif %}>
+        {% for reply in thread.replies.all %}
+        <article{% if reply.pk == thread.accepted_reply_id %} class="solucion" {% endif %}>
             {% if reply.pk == thread.accepted_reply_id %}
-                <p class="insignia-solucion">✔ Solución aceptada</p>
+            <p class="insignia-solucion">✔ Solución aceptada</p>
             {% endif %}
 
             <p>
+                <img src="{% static 'icons/user-round.svg' %}" alt="" class="ft-icon">
                 <strong>{{ reply.author.username }}</strong>
                 {% if user.is_authenticated and user != reply.author %}
-                    {% sigue_a user reply.author as ya_sigue_resp %}
-                    <form method="post"
-                          action="{% url 'forum:toggle_follow' reply.author.username %}"
-                          style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.path }}">
-                        <button type="submit">
-                            {% if ya_sigue_resp %}Dejar de seguir{% else %}Seguir{% endif %}
-                        </button>
-                    </form>
-                {% endif %}
+                {% sigue_a user reply.author as ya_sigue_resp %}
+            <form method="post" action="{% url 'forum:toggle_follow' reply.author.username %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit">
+                    <img src="{% static 'icons/feed-follow.svg' %}" alt="" class="ft-icon">
+                    {% if ya_sigue_resp %}Dejar de seguir{% else %}Seguir{% endif %}
+                </button>
+            </form>
+            {% endif %}
             </p>
 
             {% if user.is_authenticated %}
             <p>
                 <a href="{% url 'forum:report_reply' reply.pk %}">
+                    <img src="{% static 'icons/feed-question.svg' %}" alt="" class="ft-icon">
                     Reportar respuesta
                 </a>
             </p>
@@ -112,109 +138,120 @@
             <div>{{ reply.content|markdown }}</div>
 
             <p>
+                <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon">
                 Puntuación:
                 <span id="reply-score-{{ reply.pk }}">{{ reply.score }}</span>
             </p>
 
             {% if user.is_authenticated %}
-                <form class="vote-form"
-                      method="post"
-                      action="{% url 'forum:vote_reply' reply.pk %}"
-                      data-score-id="reply-score-{{ reply.pk }}">
-                    {% csrf_token %}
-                    <button type="submit" name="value" value="1">+1</button>
-                    <button type="submit" name="value" value="-1">-1</button>
-                    <button type="submit" name="value" value="0">
-                        Retirar mi voto
-                    </button>
-                    <span class="vote-message" role="status"></span>
-                </form>
+            <form class="vote-form" method="post" action="{% url 'forum:vote_reply' reply.pk %}"
+                data-score-id="reply-score-{{ reply.pk }}">
+                {% csrf_token %}
+                <button type="submit" name="value" value="1">
+                    <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon">
+                    +1
+                </button>
+                <button type="submit" name="value" value="-1">
+                    <img src="{% static 'icons/thumbs-up.svg' %}" alt="" class="ft-icon"
+                        style="transform: rotate(180deg);">
+                    -1
+                </button>
+                <button type="submit" name="value" value="0">
+                    <img src="{% static 'icons/trash-2.svg' %}" alt="" class="ft-icon">
+                    Retirar mi voto
+                </button>
+                <span class="vote-message" role="status"></span>
+            </form>
             {% endif %}
 
             {% if user == thread.author and reply.pk != thread.accepted_reply_id %}
-                <form method="post"
-                      action="{% url 'forum:accept_solution' reply.pk %}">
-                    {% csrf_token %}
-                    <button type="submit">Aceptar como solución</button>
-                </form>
+            <form method="post" action="{% url 'forum:accept_solution' reply.pk %}">
+                {% csrf_token %}
+                <button type="submit">
+                    <img src="{% static 'icons/check-circle.svg' %}" alt="" class="ft-icon">
+                    Aceptar como solución
+                </button>
+            </form>
             {% endif %}
-        </article>
-    {% empty %}
-        <p>Este hilo todavía no tiene respuestas.</p>
-    {% endfor %}
+            </article>
+            {% empty %}
+            <p>Este hilo todavía no tiene respuestas.</p>
+            {% endfor %}
     </div>
 </section>
 
 <script>
-document.querySelectorAll(".vote-form").forEach((form) => {
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
+    document.querySelectorAll(".vote-form").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        const button = event.submitter;
-        if (!button) return;
+            const button = event.submitter;
+            if (!button) return;
 
-        const message = form.querySelector(".vote-message");
-        const buttons = form.querySelectorAll("button");
-        const data = new FormData(form);
-        data.set("value", button.value);
+            const message = form.querySelector(".vote-message");
+            const buttons = form.querySelectorAll("button");
+            const data = new FormData(form);
+            data.set("value", button.value);
 
-        buttons.forEach((item) => item.disabled = true);
-        message.textContent = "Guardando...";
+            buttons.forEach((item) => item.disabled = true);
+            message.textContent = "Guardando...";
 
-        try {
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: data,
-                credentials: "same-origin",
-                headers: {
-                    "X-CSRFToken": data.get("csrfmiddlewaretoken"),
-                },
-            });
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: data,
+                    credentials: "same-origin",
+                    headers: {
+                        "X-CSRFToken": data.get("csrfmiddlewaretoken"),
+                    },
+                });
 
-            if (response.redirected) {
-                window.location.assign(response.url);
-                return;
+                if (response.redirected) {
+                    window.location.assign(response.url);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error("No se pudo guardar el voto.");
+                }
+
+                const result = await response.json();
+                document.getElementById(form.dataset.scoreId).textContent =
+                    result.score;
+
+                message.textContent = result.user_vote === 0
+                    ? "Voto retirado."
+                    : "Voto guardado.";
+            } catch (error) {
+                message.textContent =
+                    "No se pudo guardar el voto. Inténtalo de nuevo.";
+            } finally {
+                buttons.forEach((item) => item.disabled = false);
             }
-
-            if (!response.ok) {
-                throw new Error("No se pudo guardar el voto.");
-            }
-
-            const result = await response.json();
-            document.getElementById(form.dataset.scoreId).textContent =
-                result.score;
-
-            message.textContent = result.user_vote === 0
-                ? "Voto retirado."
-                : "Voto guardado.";
-        } catch (error) {
-            message.textContent =
-                "No se pudo guardar el voto. Inténtalo de nuevo.";
-        } finally {
-            buttons.forEach((item) => item.disabled = false);
-        }
+        });
     });
-});
 </script>
 
 <section>
     {% if thread.is_locked %}
-        <p><strong>Este hilo está bloqueado y no admite respuestas.</strong></p>
+    <p><strong>Este hilo está bloqueado y no admite respuestas.</strong></p>
     {% elif user.is_authenticated %}
-        <h2>Escribir una respuesta</h2>
+    <h2>
+        <img src="{% static 'icons/message-circle.svg' %}" alt="" class="ft-icon">
+        Escribir una respuesta
+    </h2>
 
-        <form method="post"
-              action="{% url 'forum:reply_create' thread.pk %}">
-            {% csrf_token %}
-            <label for="reply-content">Tu respuesta</label>
-            <textarea id="reply-content"
-                      name="content"
-                      rows="5"
-                      required></textarea>
-            <button type="submit">Publicar respuesta</button>
-        </form>
+    <form method="post" action="{% url 'forum:reply_create' thread.pk %}">
+        {% csrf_token %}
+        <label for="reply-content">Tu respuesta</label>
+        <textarea id="reply-content" name="content" rows="5" required></textarea>
+        <button type="submit">
+            <img src="{% static 'icons/feed-plus.svg' %}" alt="" class="ft-icon">
+            Publicar respuesta
+        </button>
+    </form>
     {% else %}
-        <p>Inicia sesión para responder.</p>
+    <p>Inicia sesión para responder.</p>
     {% endif %}
 </section>
 {% endblock %}

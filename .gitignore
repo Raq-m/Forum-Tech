@@ -10,3 +10,17 @@ media/
 media/
 *.bak
 .venv312/
+
+# Copias de seguridad locales: no publicar en GitHub
+*.backup
+*_backup.*
+*.antes_*
+*.bak
+
+# Archivos y carpetas de respaldo locales
+*.copia
+respaldo_css/
+respaldo_iconos/
+*.dump
+
+db.sqlite3.respaldo_antes_postgresql

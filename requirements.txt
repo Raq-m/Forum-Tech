@@ -1,51 +1,98 @@
-amqp==5.4.2
-asgiref==3.12.1
-attrs==26.1.0
-autobahn==26.7.1
-Automat==25.4.16
-billiard==4.3.2
-cbor2==6.1.5
-celery==5.7.0
-certifi==2026.7.22
-cffi==2.1.1
+# ==========================================
+# 1. FRAMEWORK PRINCIPAL
+# ==========================================
+Django==5.2.18
+
+# ==========================================
+# 2. SERVIDOR Y COMUNICACION ASINCRONA
+# ==========================================
+daphne==4.2.3
 channels==4.3.2
 channels_redis==4.3.0
+Twisted==26.4.0
+autobahn==26.7.1
+
+# ==========================================
+# 3. API REST Y DOCUMENTACION SWAGGER
+# ==========================================
+djangorestframework==3.18.3
+django-filter==26.2
+drf-spectacular==0.30.0
+inflection==0.5.1
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+PyYAML==6.0.3
+referencing==0.37.0
+rpds-py==0.25.0
+uritemplate==4.2.0
+
+# ==========================================
+# 4. BASE DE DATOS POSTGRESQL
+# ==========================================
+psycopg==3.3.9
+psycopg-binary==3.3.9
+
+# ==========================================
+# 5. VARIABLES DE ENTORNO
+# ==========================================
+python-dotenv==1.2.4
+
+# ==========================================
+# 6. TAREAS EN SEGUNDO PLANO Y COLAS
+# ==========================================
+celery==5.7.0
+redis==8.1.0
+amqp==5.4.2
+billiard==4.3.2
+kombu==5.7.0
+vine==5.1.0
+
+# ==========================================
+# 7. IMAGENES Y FORMATO
+# ==========================================
+pillow==13.0.0
+ujson==6.0.0
+
+# ==========================================
+# 8. PETICIONES HTTP Y SEGURIDAD
+# ==========================================
+requests==2.34.2
+urllib3==2.8.0
+certifi==2026.7.22
 charset-normalizer==3.5.2
+idna==3.20
+cryptography==50.0.2
+pyOpenSSL==26.4.0
+cffi==2.1.1
+pycparser==3.11
+service-identity==26.1.0
+
+# ==========================================
+# 9. UTILIDADES Y DEPENDENCIAS AUXILIARES
+# ==========================================
+asgiref==3.12.1
+attrs==26.1.0
+Automat==25.4.16
+cbor2==6.1.5
 click==8.5.1
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.4.1
 constantly==23.10.4
-cryptography==50.0.2
-daphne==4.2.3
-Django==5.2.18
 hyperlink==21.0.0
-idna==3.20
 Incremental==24.11.0
-kombu==5.7.0
 Markdown==3.11.1
 msgpack==1.2.3
 nh3==0.3.7
 packaging==26.3
-pillow==13.0.0
 prompt_toolkit==3.0.53
-pycparser==3.11
 Pygments==2.21.0
-pyOpenSSL==26.4.0
 python-dateutil==2.9.0.post0
-python-dotenv==1.2.4
-redis==8.1.0
-requests==2.34.2
-service-identity==26.1.0
 six==1.17.0
 sqlparse==0.6.0
-Twisted==26.4.0
 txaio==26.6.1
 typing_extensions==4.16.0
 tzdata==2026.5
 tzlocal==5.4.5
-ujson==6.0.0
-urllib3==2.8.0
-vine==5.1.0
 wcwidth==0.9.4
 zope.interface==8.7

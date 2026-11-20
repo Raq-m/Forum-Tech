@@ -1,0 +1,1731 @@
+/*
+
+\===============================================================================
+
+FORUM TECH Ã¢â‚¬â€ DISEÃƒâ€˜O VISUAL
+
+Archivo: static/css/forum-design.css
+
+TipografÃƒÂ­a: Helvetica / Helvetica Neue
+
+Iconos: conserva los iconos que ya existan en las plantillas.
+
+PERSONALIZACIÃƒâ€œN:
+
+Para cambiar la paleta, modifica ÃƒÆ’Ã‚Âºnicamente las variables de :root.
+
+Este archivo solo cambia presentaciÃƒÆ’Ã‚Â³n; no aÃƒÆ’Ã‚Â±ade ni altera funcionalidades.
+
+\===============================================================================
+
+*/
+
+/* 01. PALETA Y VARIABLES */
+
+:root {
+
+    /* Identidad visual Forum Tech */
+
+    --ft-primary: #F06423;
+
+    --ft-primary-hover: #D94F13;
+
+    --ft-primary-soft: #FFE8DC;
+
+    --ft-navy: #252A34;
+
+    --ft-navy-light: #343B48;
+
+    --ft-bg: #F5F6F8;
+
+    --ft-surface: #FFFFFF;
+
+    --ft-surface-soft: #FFF8F4;
+
+    --ft-text: #252A34;
+
+    --ft-muted: #737B88;
+
+    --ft-border: #E7E8EB;
+
+    --ft-border-strong: #D3D6DC;
+
+    --ft-success: #16834A;
+
+    --ft-success-soft: #EEF9F2;
+
+    --ft-danger: #C83D4D;
+
+    --ft-shadow: 0 3px 14px rgba(37, 42, 52, .055);
+
+    --ft-shadow-hover: 0 10px 28px rgba(37, 42, 52, .10);
+
+    --ft-radius: 13px;
+
+    --ft-radius-small: 8px;
+
+    --ft-font: Helvetica, "Helvetica Neue", Arial, sans-serif;
+
+    --ft-content-width: 1160px;
+
+}
+
+/* 02. BASE */
+
+*,
+
+*::before,
+
+*::after {
+
+    box-sizing: border-box;
+
+}
+
+/* 14. IDENTIDAD NARANJA FORUM TECH */
+
+body>header nav a:hover {
+
+    color: #FF9A68;
+
+}
+
+main input:focus,
+
+main select:focus,
+
+main textarea:focus {
+
+    border-color: var(--ft-primary);
+
+    box-shadow: 0 0 0 3px rgba(240, 100, 35, .15);
+
+}
+
+main>article:hover {
+
+    border-color: #F4B18F;
+
+}
+
+main>article p a {
+
+    border-color: #F8D1BD;
+
+}
+
+main>article p a:hover {
+
+    border-color: var(--ft-primary);
+
+    background: var(--ft-primary-soft);
+
+}
+
+a:focus-visible,
+
+button:focus-visible,
+
+input:focus-visible,
+
+select:focus-visible,
+
+textarea:focus-visible {
+
+    outline-color: rgba(240, 100, 35, .35);
+
+}
+
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    background: var(--ft-bg);
+
+    color: var(--ft-text);
+
+    font-family: var(--ft-font);
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    -webkit-font-smoothing: antialiased;
+
+}
+
+a {
+
+    color: var(--ft-primary);
+
+    text-decoration: none;
+
+    transition: color .18s ease, background-color .18s ease;
+
+}
+
+a:hover {
+
+    color: var(--ft-primary-hover);
+
+}
+
+h1,
+
+h2,
+
+h3,
+
+h4 {
+
+    color: var(--ft-navy);
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    letter-spacing: -.025em;
+
+}
+
+h1 {
+
+    margin: 0 0 22px;
+
+    font-size: clamp(28px, 3vw, 36px);
+
+}
+
+h2 {
+
+    font-size: 20px;
+
+}
+
+
+/* 04. AVISO DE NOTIFICACIONES */
+
+body>aside[aria-label="Notificaciones en tiempo real"] {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px 14px;
+
+    padding: 9px 18px;
+
+    border-bottom: 1px solid #F5C7B2;
+
+    background: #FFE8DC;
+
+    color: var(--ft-muted);
+
+    font-size: 14px;
+
+}
+
+body>aside[aria-label="Notificaciones en tiempo real"] p {
+
+    margin: 0;
+
+}
+
+body>aside[aria-label="Notificaciones en tiempo real"] a {
+
+    font-weight: 700;
+
+}
+
+/* 05. CONTENIDO */
+
+main {
+
+    width: min(var(--ft-content-width), calc(100% - 48px));
+
+    min-height: calc(100vh - 160px);
+
+    margin: 42px auto 64px;
+
+}
+
+/* 06. NAVEGACIÃƒâ€œN DE FEEDS */
+
+main nav[aria-label="Feeds"] {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-around;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin: 0 0 22px;
+
+    padding: 10px;
+
+    border: 1px solid #252A34;
+
+    border-radius: var(--ft-radius);
+
+    background: #252A34;
+
+    box-shadow: none;
+
+    color: #FFFFFF;
+
+}
+
+main nav[aria-label="Feeds"] a,
+
+main nav[aria-label="Feeds"] strong {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    text-align: center;
+
+    gap: 8px;
+
+    min-height: 36px;
+
+    padding: 7px 13px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+}
+
+main nav[aria-label="Feeds"] a {
+
+    color: #FFFFFF;
+
+    text-decoration: none;
+
+}
+
+main nav[aria-label="Feeds"] a:hover {
+
+    background: rgba(255, 255, 255, 0.12);
+
+    color: #FFFFFF;
+
+}
+
+main nav[aria-label="Feeds"] strong {
+
+    background: #F06423;
+
+    color: #FFFFFF;
+
+}
+
+main nav[aria-label="Feeds"] img {
+
+    width: 18px;
+
+    height: 18px;
+
+    display: block;
+
+    flex-shrink: 0;
+
+}
+
+/* 07. FORMULARIO DE BÃƒÅ¡SQUEDA Y FILTROS */
+
+main>form {
+
+    margin: 0 0 25px;
+
+    padding: 22px;
+
+    border: 1px solid var(--ft-border);
+
+    border-radius: var(--ft-radius);
+
+    background: var(--ft-surface);
+
+    box-shadow: var(--ft-shadow);
+
+}
+
+main>form p {
+
+    display: flex;
+
+    align-items: end;
+
+    flex-wrap: wrap;
+
+    gap: 12px 16px;
+
+    margin: 0 0 14px;
+
+}
+
+main>form p:last-child {
+
+    align-items: center;
+
+    margin-bottom: 0;
+
+}
+
+main label {
+
+    display: inline-flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    color: var(--ft-muted);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+main input:not([type="hidden"]),
+
+main select,
+
+main textarea {
+
+    min-height: 42px;
+
+    padding: 9px 12px;
+
+    border: 1px solid var(--ft-border-strong);
+
+    border-radius: var(--ft-radius-small);
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: var(--ft-text);
+
+    font: 14px var(--ft-font);
+
+    transition: border-color .18s ease, box-shadow .18s ease;
+
+}
+
+main input:focus,
+
+main select:focus,
+
+main textarea:focus {
+
+    border-color: var(--ft-primary);
+
+    box-shadow: 0 0 0 3px rgba(40, 100, 220, .12);
+
+}
+
+main input::placeholder,
+
+main textarea::placeholder {
+
+    color: #9aa7b8;
+
+}
+
+main>form input[name="q"] {
+
+    width: min(420px, 100%);
+
+}
+
+main>form input[name="autor"],
+
+main>form input[name="etiquetas"] {
+
+    width: 190px;
+
+}
+
+main>form input[type="date"] {
+
+    width: 155px;
+
+}
+
+main>form input[name="min_votos"] {
+
+    width: 105px;
+
+}
+
+main>form select {
+
+    min-width: 145px;
+
+}
+
+main button,
+
+main input[type="submit"] {
+
+    min-height: 42px;
+
+    padding: 9px 17px;
+
+    border: 1px solid var(--ft-primary);
+
+    border-radius: 8px;
+
+    background: var(--ft-primary);
+
+    color: #ffffff;
+
+    font: 700 13px var(--ft-font);
+
+    cursor: pointer;
+
+    transition: background-color .18s ease, transform .18s ease;
+
+}
+
+main button:hover,
+
+main input[type="submit"]:hover {
+
+    border-color: var(--ft-primary-hover);
+
+    background: var(--ft-primary-hover);
+
+    transform: translateY(-1px);
+
+}
+
+main>form p a {
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+}
+
+/* 08. BUSCADOR Y SUGERENCIAS EXISTENTES */
+
+main .buscador {
+
+    position: relative;
+
+    display: inline-block;
+
+    width: min(420px, 100%);
+
+    vertical-align: bottom;
+
+}
+
+main #buscador {
+
+    width: 100%;
+
+    margin: 0;
+
+}
+
+main #sugerencias {
+
+    position: absolute;
+
+    top: calc(100% + 5px);
+
+    right: 0;
+
+    left: 0;
+
+    z-index: 50;
+
+    max-height: 230px;
+
+    overflow-y: auto;
+
+    margin: 0;
+
+    padding: 6px;
+
+    list-style: none;
+
+    border: 1px solid var(--ft-border);
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    box-shadow: var(--ft-shadow-hover);
+
+}
+
+main #sugerencias li a {
+
+    display: block;
+
+    padding: 9px 11px;
+
+    border-radius: 6px;
+
+    color: var(--ft-text);
+
+    font-size: 13px;
+
+}
+
+main #sugerencias li a:hover {
+
+    background: var(--ft-primary-soft);
+
+    color: var(--ft-primary);
+
+}
+
+/* 09. AVISOS Y RESULTADOS */
+
+main>p {
+
+    color: var(--ft-muted);
+
+}
+
+main>p:empty {
+
+    display: none;
+
+}
+
+/* 10. TARJETAS DE HILOS */
+
+main>article {
+
+    position: relative;
+
+    margin: 0 0 18px;
+
+    padding: 22px 24px;
+
+    border: 1px solid var(--ft-border);
+
+    border-radius: var(--ft-radius);
+
+    background: var(--ft-surface);
+
+    box-shadow: var(--ft-shadow);
+
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+
+}
+
+main>article:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #F5C7B2;
+
+    box-shadow: var(--ft-shadow-hover);
+
+}
+
+main>article h2 {
+
+    margin: 0 0 9px;
+
+    font-size: 18px;
+
+    letter-spacing: -.015em;
+
+}
+
+main>article h2 a {
+
+    color: var(--ft-navy);
+
+}
+
+main>article h2 a:hover {
+
+    color: var(--ft-primary);
+
+}
+
+main>article p {
+
+    margin: 0 0 9px;
+
+    color: var(--ft-muted);
+
+    font-size: 13px;
+
+}
+
+main>article p:last-child {
+
+    margin-bottom: 0;
+
+}
+
+main>article p a {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin: 3px 5px 0 0;
+
+    padding: 4px 10px;
+
+    border: 1px solid #F5C7B2;
+
+    border-radius: 999px;
+
+    background: var(--ft-primary-soft);
+
+    color: var(--ft-primary);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+main>article p a:hover {
+
+    border-color: var(--ft-primary);
+
+    background: #FFE8DC;
+
+}
+
+/* Iconos y metadatos de las tarjetas de hilos */
+
+.ft-card-meta,
+
+.ft-card-tags {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+.ft-card-icon {
+
+    width: 16px;
+
+    height: 16px;
+
+    display: inline-block;
+
+    vertical-align: middle;
+
+    flex-shrink: 0;
+
+}
+
+.ft-card-meta span,
+
+.ft-card-tags .ft-card-tag-label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+}
+
+/* AlineaciÃƒÂ³n de los metadatos de las tarjetas */
+
+main>article .ft-card-meta {
+
+    gap: 18px;
+
+    margin: 12px 0;
+
+    color: var(--ft-muted);
+
+    font-size: 13px;
+
+}
+
+main>article .ft-card-meta span {
+
+    gap: 6px;
+
+}
+
+main>article .ft-card-meta .ft-card-icon {
+
+    width: 17px;
+
+    height: 17px;
+
+    object-fit: contain;
+
+}
+
+/* Iconos naranjas */
+
+main>article .ft-card-meta img {
+
+    filter: brightness(0) saturate(100%) invert(43%) sepia(91%) saturate(1800%) hue-rotate(347deg) brightness(98%);
+
+}
+
+/* Icono relleno junto al tÃƒÂ­tulo de cada hilo */
+
+.ft-card-title-icon {
+
+    width: 20px;
+
+    height: 20px;
+
+    display: inline-block;
+
+    vertical-align: -3px;
+
+    margin-right: 9px;
+
+    flex-shrink: 0;
+
+}
+
+/* 11. PAGINACIÃƒâ€œN */
+
+main nav[aria-label="PaginaciÃƒÂ³n"] {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin-top: 24px;
+
+    padding: 15px;
+
+    border: 1px solid var(--ft-border);
+
+    border-radius: var(--ft-radius);
+
+    background: var(--ft-surface);
+
+    color: var(--ft-muted);
+
+    font-size: 13px;
+
+}
+
+main nav[aria-label="PaginaciÃƒÂ³n"] a {
+
+    padding: 7px 13px;
+
+    border: 1px solid var(--ft-border);
+
+    border-radius: 7px;
+
+    background: var(--ft-surface-soft);
+
+    font-weight: 700;
+
+}
+
+main nav[aria-label="PaginaciÃƒÂ³n"] a:hover {
+
+    border-color: var(--ft-primary);
+
+    background: var(--ft-primary-soft);
+
+}
+
+/* 12. ACCESIBILIDAD */
+
+a:focus-visible,
+
+button:focus-visible,
+
+input:focus-visible,
+
+select:focus-visible,
+
+textarea:focus-visible {
+
+    outline: 3px solid rgba(240, 100, 35, .35);
+
+    outline-offset: 2px;
+
+}
+
+/* 13. RESPONSIVE */
+
+@media (max-width: 760px) {
+
+    main {
+
+        width: calc(100% - 30px);
+
+        margin: 25px auto 42px;
+
+    }
+
+    main>form {
+
+        padding: 16px;
+
+    }
+
+    main>form p {
+
+        align-items: stretch;
+
+    }
+
+    main>form p>label,
+
+    main .buscador {
+
+        width: 100%;
+
+    }
+
+    main>form input[name="autor"],
+
+    main>form input[name="etiquetas"],
+
+    main>form input[type="date"],
+
+    main>form input[name="min_votos"],
+
+    main>form select {
+
+        width: 100%;
+
+    }
+
+    main>article {
+
+        padding: 18px;
+
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    \*,
+
+    \*::before,
+
+    \*::after {
+
+        scroll-behavior: auto !important;
+
+        transition-duration: .01ms !important;
+
+        animation-duration: .01ms !important;
+
+    }
+
+}
+
+/* Iconos SVG de la navegaciÃƒÆ’Ã‚Â³n */
+
+.ft-icon {
+
+    width: 18px;
+
+    height: 18px;
+
+    display: inline-block;
+
+    vertical-align: middle;
+
+    margin-right: 6px;
+
+    flex-shrink: 0;
+
+}
+
+/* Acciones de filtros: franja naranja centrada */
+
+main>form .ft-filter-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 18px;
+
+    padding: 10px 16px;
+
+    border: 1px solid #F5C7B2;
+
+    border-radius: var(--ft-radius);
+
+    background: #FFE8DC;
+
+}
+
+main>form .ft-filter-actions button,
+
+main>form .ft-filter-actions a {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 38px;
+
+    padding: 8px 15px;
+
+    border: 1px solid #F5C7B2;
+
+    border-radius: 8px;
+
+    background: #FFE8DC;
+
+    color: #F06423;
+
+    font: 700 13px var(--ft-font);
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: background-color .18s ease, border-color .18s ease;
+
+}
+
+main>form .ft-filter-actions button:hover,
+
+main>form .ft-filter-actions a:hover {
+
+    border-color: #F06423;
+
+    background: #ffffff;
+
+    color: #D94F13;
+
+}
+
+.ft-filter-action-icon {
+
+    width: 17px;
+
+    height: 17px;
+
+    display: inline-block;
+
+    flex-shrink: 0;
+
+}
+
+
+/* TÃƒÆ’Ã‚ÂTULO PRINCIPAL DE LA PÃƒÆ’Ã‚ÂGINA DE HILOS */
+
+.ft-page-title {
+
+    text-align: center;
+
+    font-family: inherit;
+
+    font-size: clamp(24px, 2.2vw, 28px);
+
+    font-weight: 700;
+
+    color: var(--ft-navy);
+
+    line-height: 1.25;
+
+    letter-spacing: -.025em;
+
+    margin: 0 0 22px;
+
+}
+
+
+/* BLOQUES DE CODIGO: COLOR DE LA CABECERA */
+
+.codehilite {
+
+    display: inline-block;
+
+    max-width: 100%;
+
+    overflow-x: auto;
+
+    box-sizing: border-box;
+
+    padding: 10px 14px;
+
+    border-radius: 6px;
+
+    vertical-align: top;
+
+    background: var(--ft-navy);
+
+    color: #FFFFFF;
+
+}
+
+.codehilite pre {
+
+    margin: 0;
+
+    background: transparent;
+
+}
+
+.codehilite .hll {
+
+    background-color: transparent;
+
+}
+
+.codehilite code {
+
+    background: transparent;
+
+    color: #FFFFFF;
+
+}
+
+/* ICONOS DE VOTACIÃƒâ€œN Y REPORTES */
+
+/* Iconos de puntuaciÃƒÂ³n: naranja sobre fondo claro */
+
+p>img.ft-icon[src\*="thumbs-up"] {
+
+    filter: none;
+
+}
+
+/* Iconos de voto dentro de botones naranjas: blancos */
+
+.vote-form button img.ft-icon {
+
+    filter: brightness(0) invert(1);
+
+}
+
+/* Iconos de reportar: naranja sobre fondo claro */
+
+a img.ft-icon[src\*="feed-question"] {
+
+    filter: brightness(0) saturate(100%) invert(43%) sepia(91%) saturate(1800%) hue-rotate(347deg) brightness(98%);
+
+}
+
+/* Ocultar separadores entre filtros */
+
+main nav[aria-label="Feeds"] {
+
+    font-size: 0;
+
+}
+
+main nav[aria-label="Feeds"] a,
+
+main nav[aria-label="Feeds"] strong {
+
+    font-size: 13px;
+
+}
+
+/* BOTONES DE APLICAR Y LIMPIAR FILTROS */
+
+/* Franja inferior */
+
+main>form p.ft-filter-actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    width: 100%;
+
+    min-height: 68px;
+
+    box-sizing: border-box;
+
+    margin: 18px 0 0;
+
+    padding: 12px;
+
+    border: 1px solid #F8CBB6;
+
+    border-radius: 12px;
+
+    background: #FFE8DC;
+
+}
+
+/* TamaÃƒÂ±o y alineaciÃƒÂ³n de los dos controles */
+
+main>form .ft-apply-filters,
+
+main>form .ft-clear-filters {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 155px;
+
+    min-height: 42px;
+
+    box-sizing: border-box;
+
+    padding: 9px 16px;
+
+    border: 1px solid #F5C7B2;
+
+    border-radius: 9px;
+
+    font: 700 13px var(--ft-font);
+
+    text-decoration: none;
+
+}
+
+/* Iconos: tamaÃƒÂ±o uniforme */
+
+main>form .ft-filter-actions img {
+
+    display: block;
+
+    width: 17px;
+
+    height: 17px;
+
+    max-width: 17px;
+
+    max-height: 17px;
+
+    object-fit: contain;
+
+    flex-shrink: 0;
+
+}
+
+/* Aplicar filtros */
+
+main>form .ft-apply-filters {
+
+    background: var(--ft-primary);
+
+    color: #FFFFFF;
+
+}
+
+/* Limpiar filtros */
+
+main>form .ft-clear-filters {
+
+    background: #FFF0E8;
+
+    color: var(--ft-primary);
+
+}
+
+/* ==================================================
+
+   RESPONSIVE FORUM TECH
+
+   MÃƒÂ³vil, tableta y escritorio
+
+   \================================================== */
+
+/* TABLETAS Y PANTALLAS MEDIANAS */
+
+@media (min-width: 761px) and (max-width: 1100px) {
+
+    main {
+
+        width: calc(100% - 40px);
+
+    }
+
+
+    main>form {
+
+        padding: 18px;
+
+    }
+
+    main>form p {
+
+        gap: 12px;
+
+    }
+
+    main>form input[name="q"],
+
+    main>form input[name="autor"],
+
+    main>form input[name="etiquetas"],
+
+    main>form input[type="date"],
+
+    main>form input[name="min_votos"],
+
+    main>form select {
+
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+    }
+
+}
+
+/* MÃƒâ€œVILES */
+
+@media (max-width: 760px) {
+
+
+    main {
+
+        width: calc(100% - 24px);
+
+        margin: 22px auto 35px;
+
+    }
+
+    main nav[aria-label="Feeds"] {
+
+        justify-content: center;
+
+        gap: 6px;
+
+        padding: 8px;
+
+    }
+
+    main nav[aria-label="Feeds"] a,
+
+    main nav[aria-label="Feeds"] strong {
+
+        justify-content: center;
+
+        padding: 7px 9px;
+
+        font-size: 12px;
+
+    }
+
+    main>form {
+
+        padding: 14px;
+
+    }
+
+    main>form p {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 8px;
+
+    }
+
+    main>form p>label,
+
+    main>form .buscador,
+
+    main>form input,
+
+    main>form select {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+    }
+
+    main>form .ft-filter-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        padding: 12px;
+
+    }
+
+    main>form .ft-apply-filters,
+
+    main>form .ft-clear-filters {
+
+        width: 100%;
+
+        min-width: 0;
+
+    }
+
+    main>article {
+
+        padding: 15px;
+
+    }
+
+    .ft-card-meta,
+
+    .ft-card-tags {
+
+        gap: 8px;
+
+    }
+
+}
+
+/* MÃƒâ€œVILES MUY ESTRECHOS */
+
+@media (max-width: 400px) {
+
+
+    main h1 {
+
+        font-size: 23px;
+
+    }
+
+    main nav[aria-label="Feeds"] a,
+
+    main nav[aria-label="Feeds"] strong {
+
+        font-size: 11px;
+
+        padding: 6px;
+
+    }
+
+}
+
+/* ================================================================
+   03. CABECERA Y NAVEGACIÃ“N
+   Una sola definiciÃ³n. El bloque de marca conserva sus dimensiones.
+   ================================================================ */
+
+body>header.ft-header {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    padding: 28px 35px 30px;
+    box-sizing: border-box;
+    background: #252933;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 4px 16px rgba(16, 30, 51, .12);
+}
+
+/* Isotipo y logotipo: se conservan sin cambios visuales. */
+.ft-header-brand {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.ft-header .ft-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 0;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ft-header .ft-brand-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0;
+}
+
+.ft-header .ft-brand-code {
+    width: 70px;
+    height: 70px;
+}
+
+.ft-header .ft-brand-text {
+    color: #ffffff;
+    font-size: 66px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* MenÃº: Hilos y los enlaces de usuario comparten la misma fila. */
+.ft-header .ft-nav-links {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 2.2vw, 30px);
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.ft-header .ft-nav-links>a {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 10px 0;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ft-header .ft-nav-links>a:hover {
+    color: var(--ft-primary);
+}
+
+.ft-header .ft-nav-links .ft-icon {
+    display: block;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+}
+
+.ft-header .ft-nav-links>form {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.ft-header .ft-nav-links>form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 9px 16px;
+    border: 2px solid #626975;
+    border-radius: 14px;
+    background: #343943;
+    color: #ffffff;
+    font-family: var(--ft-font);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.ft-header .ft-nav-links>form button:hover {
+    border-color: var(--ft-primary);
+    color: var(--ft-primary);
+}
+
+/* Notificaciones: misma escala que los enlaces de navegaciÃ³n. */
+body>aside[aria-label="Notificaciones en tiempo real"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 9px 14px;
+    border-bottom: 1px solid #F5C7B2;
+    background: #FFE8DC;
+    color: var(--ft-muted);
+    font-size: 16px;
+    line-height: 1.35;
+    text-align: center;
+}
+
+body>aside[aria-label="Notificaciones en tiempo real"] p {
+    margin: 0;
+}
+
+body>aside[aria-label="Notificaciones en tiempo real"] a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+body>aside[aria-label="Notificaciones en tiempo real"] .ft-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+}
+
+/* Tabletas */
+@media (max-width: 1100px) {
+    .ft-header .ft-brand-text {
+        font-size: 48px;
+    }
+
+    .ft-header .ft-brand-icon {
+        width: 68px;
+        height: 68px;
+    }
+
+    .ft-header .ft-brand-code {
+        width: 54px;
+        height: 54px;
+    }
+
+    .ft-header .ft-nav-links {
+        gap: 18px;
+    }
+
+    .ft-header .ft-nav-links>a,
+    .ft-header .ft-nav-links>form button {
+        font-size: 16px;
+    }
+
+    .ft-header .ft-nav-links .ft-icon {
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* MÃ³viles: el menÃº no salta de lÃ­nea; se puede deslizar si no cabe. */
+@media (max-width: 760px) {
+    body>header.ft-header {
+        gap: 18px;
+        padding: 18px 12px 16px;
+    }
+
+    .ft-header .ft-brand {
+        gap: 9px;
+    }
+
+    .ft-header .ft-brand-text {
+        font-size: 31px;
+    }
+
+    .ft-header .ft-brand-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .ft-header .ft-brand-code {
+        width: 34px;
+        height: 34px;
+    }
+
+    .ft-header .ft-nav-links {
+        justify-content: center;
+        gap: 14px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 2px 2px 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .ft-header .ft-nav-links>a {
+        gap: 5px;
+        padding: 7px 2px;
+        font-size: 13px;
+    }
+
+    .ft-header .ft-nav-links .ft-icon {
+        flex-basis: 19px;
+        width: 19px;
+        height: 19px;
+    }
+
+    .ft-header .ft-nav-links>form button {
+        gap: 5px;
+        min-height: 34px;
+        padding: 7px 9px;
+        font-size: 13px;
+    }
+
+    body>aside[aria-label="Notificaciones en tiempo real"],
+    body>aside[aria-label="Notificaciones en tiempo real"] a {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 400px) {
+    .ft-header .ft-nav-links {
+        gap: 16px;
+    }
+
+    .ft-header .ft-nav-links>a,
+    .ft-header .ft-nav-links>form button {
+        font-size: 12px;
+    }
+}

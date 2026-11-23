@@ -96,3 +96,5 @@ tzdata==2026.5
 tzlocal==5.4.5
 wcwidth==0.9.4
 zope.interface==8.7
+
+whitenoise==6.12.0

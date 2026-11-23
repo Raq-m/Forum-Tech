@@ -24,3 +24,4 @@ respaldo_iconos/
 *.dump
 
 db.sqlite3.respaldo_antes_postgresql
+staticfiles/

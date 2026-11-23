@@ -1,13 +1,48 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
 Inicio | Forum Tech
 {% endblock %}
 
 {% block content %}
-<h1>Forum Tech</h1>
+<h1 class="welcome-title">
+    <img src="{% static 'icons/house.svg' %}" alt="">
+    ¡Bienvenido a Forum Tech!
+</h1>
 <p>
-    Un espacio para compartir conocimientos sobre tecnología.
+    Comparte conocimientos, resuelve dudas y descubre nuevas tecnologías.
 </p>
-{% endblock %}
 
+<div class="help-section">
+    <h2>
+    <img src="{% static 'icons/message-circle.svg' %}" alt="">
+    ¿Tienes alguna duda?
+</h2>
+    <p>
+        La comunidad está aquí para ayudarte. Publica tu pregunta y comparte tus conocimientos.
+    </p>
+</div>
+
+<!-- Botón crear nuevo hilo -->
+<div class="create-thread-container">
+   <a href="/editor/crear/" class="create-thread-button">
+    <img src="{% static 'icons/feed-plus.svg' %}" alt="">
+    Crear nuevo hilo
+</a>
+</div>
+<!-- Franja Sabías que -->
+<section class="did-you-know">
+
+    <h2>
+    <img src="{% static 'icons/lightbulb.svg' %}" alt="">
+    ¿Sabías que...?
+</h2>
+
+    <p>
+        La tecnología evoluciona constantemente.
+        Compartir conocimientos nos ayuda a aprender juntos.
+    </p>
+
+</section>
+
+{% endblock %}

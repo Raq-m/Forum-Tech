@@ -154,9 +154,9 @@ body {
 
     font-family: var(--ft-font);
 
-    font-size: 15px;
+    font-size: 20px;
 
-    line-height: 1.6;
+
 
     -webkit-font-smoothing: antialiased;
 
@@ -186,7 +186,7 @@ h3,
 
 h4 {
 
-    color: var(--ft-navy);
+    color: #F06423;
 
     font-weight: 700;
 
@@ -208,6 +208,137 @@ h2 {
 
     font-size: 20px;
 
+}
+
+.help-section {
+    background-color: #F5C7B2;
+    color: #F06423;
+    padding: 25px 20px;
+    border-radius: 20px;
+    margin-top: 35px;
+    margin-bottom: 20px;
+}
+
+.help-section h2 {
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.help-section p {
+    color: #ffffff;
+    font-size: 21px;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Botón crear nuevo hilo */
+.create-thread-container {
+    width: 100%;
+    margin: 25px 0;
+}
+
+.create-thread-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    width: 100%;
+    padding: 25px 20px;
+
+    background-color: #ff641f;
+    color: white;
+
+    border-radius: 20px;
+    text-decoration: none;
+
+    font-size: 25px;
+    font-weight: 600;
+
+    transition: background-color 0.3s ease;
+}
+
+.create-thread-button:hover {
+    background-color: #e65313;
+    color: white;
+    text-decoration: none;
+}
+
+.create-thread-button i {
+    font-size: 22px;
+}
+
+/* FRANJA SABÍAS QUE */
+
+.did-you-know {
+    background-color: #252832;
+    color: #ffffff;
+    padding: 25px 20px;
+    border-radius: 20px;
+    margin: 35px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.did-you-know h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 18px 0;
+}
+
+.did-you-know p {
+    color: #d1d3d9;
+    font-size: 21px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Iconos de la página principal */
+
+.welcome-title,
+.help-section h2,
+.did-you-know h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.welcome-title img,
+.help-section h2 img,
+.did-you-know h2 img {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.create-thread-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.create-thread-button img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) invert(1);
+}
+
+/* Adaptación a móviles */
+
+@media (max-width: 600px) {
+    .did-you-know {
+        padding: 22px 18px;
+    }
+
+    .did-you-know h2 {
+        font-size: 23px;
+    }
+
+    .did-you-know p {
+        font-size: 16px;
+    }
 }
 
 
@@ -707,7 +838,7 @@ main>article p a {
 
     color: var(--ft-primary);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -1171,7 +1302,7 @@ main nav[aria-label="Feeds"] a,
 
 main nav[aria-label="Feeds"] strong {
 
-    font-size: 13px;
+    font-size: 16px;
 
 }
 
@@ -1579,7 +1710,7 @@ body>header.ft-header {
     background: #343943;
     color: #ffffff;
     font-family: var(--ft-font);
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 1.2;
     white-space: nowrap;
